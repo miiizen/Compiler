@@ -3,12 +3,12 @@
 
 #include <iostream>
 #include "token.h"
+namespace Compiler {
+	class Parser {
+	public:
 
-class Parser {
-public:
+	private:
 
-private:
-
-};
-
+	};
+}
 #endif
