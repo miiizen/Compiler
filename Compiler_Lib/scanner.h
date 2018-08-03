@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __SCANNER_H
 #define __SCANNER_H
 

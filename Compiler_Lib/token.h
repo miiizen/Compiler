@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __TOKEN_H
 #define __TOKEN_H
 
@@ -42,6 +43,7 @@ namespace Compiler {
 		friend std::ostream& operator<<(std::ostream&, const Token&);
 
 		friend bool operator==(const Token& lhs, const Token& rhs);
+
 	};
 }
 

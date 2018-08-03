@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include <iostream>
-#include <string>
 #include "token.h"
 #include "scanner.h"
+#include <iostream>
+#include <string>
 
 namespace Compiler {
 	// Return the next token from input stream
@@ -44,14 +44,20 @@ namespace Compiler {
 
 		// Operators
 		else if (isBinOp(lookChar)) {
-			std::string lookStr{ lookChar };
-			return Token{ BINOP, lookStr };
+			return { Token(BINOP, std::string(1, lookChar)) };
+			//switch (lookChar) {
+			//case '+':
+			//	return{ Token(PLUS, "+") };
+			//case '-':
+			//	return{ Token(MINUS, "-") };
+			//case '*':
+			//	return{ Token(MULTIPLY, "*") };
+			//case '/':
+			//	return{ Token(DIVIDE, "/") };
+			//case '^':
+			//	return{ Token(POW, "^") };
+			//}
 		}
-
-		/*else if (isUnOp(lookChar)) {
-			std::string lookStr{ lookChar };
-			return Token{ UNOP, lookStr };
-		}*/
 
 		// Parentheses
 		else if (lookChar == '(') {
@@ -76,19 +82,30 @@ namespace Compiler {
 	/* Methods */
 	char Scanner::nextChar() {
 		try {
-			lookChar = _inp.at(pos);
-			pos++;
+			// TODO BAD BAD BAD EOL REALLY NEEDS SORTING OUT
+			if (pos > _inp.length() - 1) {
+				return ';';
+			}
+			else {
+				lookChar = _inp.at(pos);
+				pos++;
+				return lookChar;
+			}
 		}
 		catch (std::exception& e) {
 			error("nextChar: " + std::string(e.what()));
 		}
-
-		return lookChar;
 	}
 
 	char Scanner::peekChar() {
 		try {
-			return _inp.at(pos);
+			if (pos > _inp.length() - 1) {
+				// TODO BAD BAD BAD THIS FEELS WRONG
+				return ';';
+			}
+			else {
+				return _inp.at(pos);
+			}
 		}
 		catch (std::exception& e) {
 			error("peekChar: " + std::string(e.what()));
@@ -106,7 +123,7 @@ namespace Compiler {
 
 	void Scanner::error(std::string message) {
 		throw message;
-		std::cerr << message << std::endl;
+		std::cerr << "Scanner: " << message << std::endl;
 	}
 
 	/* Recognisers */

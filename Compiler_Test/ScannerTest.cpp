@@ -100,14 +100,45 @@ TEST(ScannerTest, HandlesOperators) {
 }
 
 TEST(ScannerTest, HandlesExpressions) {
-	Scanner myScan = Scanner("12+3;");
-	Token result;
-	std::vector<Token> results;
-	std::vector<Token> exp{ Token(NUMBER, "12"), Token(BINOP, "+"), Token(NUMBER, "3"), Token(END, ";") };
-	do {
-		result = myScan.getToken();
-		results.push_back(result);
-	} while (result.getType() != END);
+	// BASIC EXPRESSION
+	{
+		Scanner myScan = Scanner("12+3;");
+		Token result;
+		std::vector<Token> results;
+		std::vector<Token> exp{ Token(NUMBER, "12"), Token(BINOP, "+"), Token(NUMBER, "3"), Token(END, ";") };
+		do {
+			result = myScan.getToken();
+			results.push_back(result);
+		} while (result.getType() != END);
 
-	ASSERT_EQ(results, exp) << "Expression scanned is not expected";
+		ASSERT_EQ(results, exp) << "Expression scanned is not expected";
+	}
+
+	// WHITESPACE
+	{
+		Scanner myScan = Scanner("12 + 3;");
+		Token result;
+		std::vector<Token> results;
+		std::vector<Token> exp{ Token(NUMBER, "12"), Token(BINOP, "+"), Token(NUMBER, "3"), Token(END, ";") };
+		do {
+			result = myScan.getToken();
+			results.push_back(result);
+		} while (result.getType() != END);
+
+		ASSERT_EQ(results, exp) << "Expression with whitespace was not expected";
+	}
+
+	// PARENTHESES
+	{
+		Scanner myScan = Scanner("(12 + 3) * 5;");
+		Token result;
+		std::vector<Token> results;
+		std::vector<Token> exp{ Token(LEFTPAREN, "("), Token(NUMBER, "12"), Token(BINOP, "+"), Token(NUMBER, "3"),Token(RIGHTPAREN, ")"), Token(BINOP, "*"), Token(NUMBER, "5"), Token(END, ";") };
+		do {
+			result = myScan.getToken();
+			results.push_back(result);
+		} while (result.getType() != END);
+
+		ASSERT_EQ(results, exp) << "Expression with whitespace was not expected";
+	}
 }
