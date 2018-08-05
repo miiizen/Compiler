@@ -16,12 +16,12 @@ namespace Compiler {
 		else { return false; }
 	}
 
-	const TokenType Token::getType()
+	TokenType Token::getType() const
 	{
 		return _tokType;
 	}
 
-	const std::string Token::getValue()
+	std::string Token::getValue() const
 	{
 		return _value;
 	}

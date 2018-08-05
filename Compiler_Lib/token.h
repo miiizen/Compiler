@@ -26,10 +26,10 @@ namespace Compiler {
 		{ }
 
 		// Return token type
-		const TokenType getType();
+		TokenType getType() const;
 
 		// Return token value
-		const std::string getValue();
+		std::string getValue() const;
 
 
 	private:

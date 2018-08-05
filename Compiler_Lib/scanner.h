@@ -33,17 +33,17 @@ namespace Compiler {
 		// Peek next character without increasing pos
 		char peekChar();
 		// Expect a character
-		void expect(char ch);
+		void expect(const char &ch);
 		// Return an error
 		void error(std::string message);
 
 		/* Recognisers */
 		// Recognise a binary operator
-		bool isBinOp(char op);
+		bool isBinOp(const char &op) const;
 		// Recognise a unary operator
-		bool isUnOp(char op);
+		bool isUnOp(const char &op) const;
 		// Recognise whitespace
-		bool isWhite(char op);
+		bool isWhite(const char &op) const;
 
 		/* Consumers */
 		void skipWhite();

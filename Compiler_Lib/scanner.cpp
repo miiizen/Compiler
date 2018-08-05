@@ -112,7 +112,7 @@ namespace Compiler {
 		}
 	}
 
-	void Scanner::expect(char ch) {
+	void Scanner::expect(const char &ch) {
 		if (peekChar() != ch) {
 			error("Expected '" + std::string(1, ch) + "'.");
 		}
@@ -128,7 +128,7 @@ namespace Compiler {
 
 	/* Recognisers */
 
-	bool Scanner::isBinOp(char op) {
+	bool Scanner::isBinOp(const char &op) const {
 		switch (op) {
 		case '+':
 		case '-':
@@ -141,7 +141,7 @@ namespace Compiler {
 		}
 	}
 
-	bool Scanner::isUnOp(char op) {
+	bool Scanner::isUnOp(const char &op) const {
 		switch (op) {
 		case '-':
 			return true;
@@ -150,8 +150,7 @@ namespace Compiler {
 		}
 	}
 
-	bool Scanner::isWhite(char op)
-	{
+	bool Scanner::isWhite(const char &op) const {
 		if (op == ' ' || op == '\n' || op == '\t') {
 			return true;
 		}
