@@ -10,7 +10,7 @@ namespace Compiler {
 	enum TokenType {
 		BINOP, UNOP,
 		LEFTPAREN, RIGHTPAREN,
-		NUMBER, IDENTIFIER,
+		NUMBER, STRING, IDENTIFIER,
 		IF, ENDIF, ELSE,
 		END
 	};

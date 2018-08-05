@@ -143,6 +143,16 @@ TEST(ScannerTest, HandlesExpressions) {
 			results.push_back(result);
 		} while (result.getType() != END);
 
-		ASSERT_EQ(results, exp) << "Expression with whitespace was not expected";
+		ASSERT_EQ(results, exp) << "Expression with parentheses was not expected";
 	}
+}
+
+TEST(ScannerTest, HandlesStrings) {
+	Scanner myScan = Scanner("\"test string\"");
+	Token exp = Token(STRING, "test string");
+	Token result = myScan.getToken();
+
+	ASSERT_EQ(result, exp) << "Failed to get string literal";
+
+	//TODO test for failure to parse string, missing " etc.
 }

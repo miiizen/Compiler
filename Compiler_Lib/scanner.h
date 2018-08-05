@@ -51,6 +51,8 @@ namespace Compiler {
 		std::string getName();
 		// Get a number
 		std::string getNum();
+		// Get a string literal
+		std::string getString();
 		// Get an operator
 		std::string getOp();
 

@@ -68,6 +68,12 @@ namespace Compiler {
 			return Token{ RIGHTPAREN, ")" };
 		}
 
+		// String literals
+		else if (lookChar == '"') {
+			std::string strLit = getString();
+			return Token{ STRING, strLit };
+		}
+
 		// End of input
 		else if (lookChar == ';') {
 			return Token{ END, ";" };
@@ -85,6 +91,7 @@ namespace Compiler {
 			// TODO BAD BAD BAD EOL REALLY NEEDS SORTING OUT
 			if (pos > _inp.length() - 1) {
 				return ';';
+				error("nextChar: Reached end of input without terminator.");
 			}
 			else {
 				lookChar = _inp.at(pos);
@@ -103,6 +110,7 @@ namespace Compiler {
 				// TODO BAD BAD BAD THIS FEELS WRONG
 				// If we have reached the end of the input without encountering a semi colon return one anyway?
 				return ';';
+				error("peekChar: Reached end of input without terminator.");
 			}
 			else {
 				return _inp.at(pos);
@@ -113,8 +121,9 @@ namespace Compiler {
 		}
 	}
 
+	// Verify char is expected then eat.
 	void Scanner::expect(const char &ch) {
-		if (peekChar() != ch) {
+		if (lookChar != ch) {
 			error("Expected '" + std::string(1, ch) + "'.");
 		}
 		else {
@@ -196,6 +205,21 @@ namespace Compiler {
 		}
 		skipWhite();
 		return numStr;
+	}
+
+	// <string> ::= " [\w*] "
+	std::string Scanner::getString() {
+		// Eat opening "
+		expect('"');
+		std::string litString;
+
+		while (peekChar() != '"') {
+			litString += nextChar();
+		}
+		// Eat closing "
+		expect('"');
+
+		return litString;
 	}
 
 
