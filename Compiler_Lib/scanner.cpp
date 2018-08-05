@@ -101,6 +101,7 @@ namespace Compiler {
 		try {
 			if (pos > _inp.length() - 1) {
 				// TODO BAD BAD BAD THIS FEELS WRONG
+				// If we have reached the end of the input without encountering a semi colon return one anyway?
 				return ';';
 			}
 			else {
@@ -122,8 +123,10 @@ namespace Compiler {
 	}
 
 	void Scanner::error(std::string message) {
-		throw message;
 		std::cerr << "Scanner: " << message << std::endl;
+		// Recover from error by skipping token and trying to resume
+		// Not sure how useful this really is, but we'll see
+		nextChar();
 	}
 
 	/* Recognisers */
