@@ -156,3 +156,21 @@ TEST(ScannerTest, HandlesStrings) {
 
 	//TODO test for failure to parse string, missing " etc.
 }
+
+TEST(ScannerTest, HandlesBools) {
+	// Get true
+	Scanner myScan = Scanner("true");
+	Token exp = Token(BOOL, "true");
+	Token result = myScan.getToken();
+
+	ASSERT_EQ(result, exp) << "Failed to get bool 'true'";
+
+
+	// Get false
+	myScan = Scanner("false");
+	exp = Token(BOOL, "false");
+	result = myScan.getToken();
+
+	ASSERT_EQ(result, exp) << "Failed to get bool 'false'";
+}
+
