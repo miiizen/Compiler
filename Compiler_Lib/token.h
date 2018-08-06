@@ -10,9 +10,9 @@ namespace Compiler {
 	enum TokenType {
 		BINOP, UNOP,
 		LEFTPAREN, RIGHTPAREN,
-		NUMBER, STRING, IDENTIFIER,
+		NUMBER, STRING, IDENTIFIER, BOOL,
 		IF, ENDIF, ELSE,
-		END
+		NEWLINE, END
 	};
 
 	// Class representing a token, its type and value

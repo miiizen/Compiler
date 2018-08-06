@@ -36,6 +36,10 @@ namespace Compiler {
 				return Token{ ELSE, identStr };
 			}
 
+			// Handle bools
+			else if (identStr == "true" || identStr == "false") {
+				return Token{ BOOL, identStr };
+
 			// just an identifier
 			else {
 				return Token{ IDENTIFIER, identStr };
