@@ -10,6 +10,16 @@ namespace Compiler {
 		Token curTok;
 		nextChar();
 
+		// skip comment
+		if (lookChar == '#') {
+			// Skip until EOL
+			char c;
+			do {
+				nextChar();
+			} while (lookChar != '\n');
+			nextChar();
+		}
+
 		// Eat whitespace
 		if (isspace(lookChar)) {
 			nextChar();
@@ -95,14 +105,15 @@ namespace Compiler {
 		try {
 			// TODO BAD BAD BAD EOL REALLY NEEDS SORTING OUT
 			if (pos > _inp.length() - 1) {
-				return ';';
-				error("nextChar: Reached end of input without terminator.");
+				lookChar = ';';
+				// Infinite loops rip
+				//error("nextChar: Reached end of input without terminator.");
 			}
 			else {
 				lookChar = _inp.at(pos);
 				pos++;
-				return lookChar;
 			}
+			return lookChar;
 		}
 		catch (std::exception& e) {
 			error("nextChar: " + std::string(e.what()));
@@ -115,7 +126,9 @@ namespace Compiler {
 				// TODO BAD BAD BAD THIS FEELS WRONG
 				// If we have reached the end of the input without encountering a semi colon return one anyway?
 				return ';';
-				error("peekChar: Reached end of input without terminator.");
+				// This was causing infinite loops.
+				// A missing ; is not a massive error at the moment as it's recoverable
+				//error("peekChar: Reached end of input without terminator.");
 			}
 			else {
 				return _inp.at(pos);

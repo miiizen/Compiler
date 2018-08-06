@@ -174,3 +174,23 @@ TEST(ScannerTest, HandlesBools) {
 	ASSERT_EQ(result, exp) << "Failed to get bool 'false'";
 }
 
+TEST(ScannerTest, HandlesComments) {
+	Scanner myScan = Scanner("#comment\n2");
+	Token exp = Token(NUMBER, "2");
+	Token result = myScan.getToken();
+
+	ASSERT_EQ(result, exp) << "Failed to read single number after comment";
+
+	// Token before and after comment
+	myScan = Scanner("1 #comment comment\n2");
+	std::vector<Token> expToks{ Token(NUMBER, "1"), Token(NUMBER, "2"), Token(END, ";") };
+	std::vector<Token> results;
+
+	do {
+		result = myScan.getToken();
+		results.push_back(result);
+	} while (result.getType() != END);
+
+	ASSERT_EQ(results, expToks) << "Failed to read number before and after comment";
+
+}
