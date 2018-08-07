@@ -14,8 +14,10 @@ namespace Compiler {
 		Scanner(std::string inp)
 			: _inp{ inp }
 		{ }
-		// Get a whole token from input stream
-		Token getToken();
+		// Return the current token
+		Token getCurrentToken();
+		// Get the next token from input stream
+		Token getNextToken();
 
 	private:
 		// Input stream
@@ -25,7 +27,7 @@ namespace Compiler {
 		// The lookahead character read
 		char lookChar;
 		// Current token
-		Token _token;
+		Token currentToken;
 
 		/* Methods */
 		// Return next character, increase pos

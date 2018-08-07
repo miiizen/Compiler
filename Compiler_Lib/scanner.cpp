@@ -5,8 +5,12 @@
 #include <string>
 
 namespace Compiler {
+	Token Scanner::getCurrentToken()
+	{
+		return currentToken;
+	}
 	// Return the next token from input stream
-	Token Scanner::getToken() {
+	Token Scanner::getNextToken() {
 		Token curTok;
 		nextChar();
 
@@ -28,7 +32,7 @@ namespace Compiler {
 		// Numbers
 		if (isdigit(lookChar)) {
 			std::string numStr{ getNum() };
-			return Token{ NUMBER, numStr };
+			currentToken = Token{ NUMBER, numStr };
 		}
 		// Identifiers
 		else if (isalpha(lookChar)) {
@@ -36,30 +40,30 @@ namespace Compiler {
 
 			// Handle keywords
 			if (identStr == "if") {
-				return Token{ IF, identStr };
+				currentToken = Token{ IF, identStr };
 			}
 			else if (identStr == "endif") {
-				return Token{ ENDIF, identStr };
+				currentToken = Token{ ENDIF, identStr };
 			}
 
 			else if (identStr == "else") {
-				return Token{ ELSE, identStr };
+				currentToken = Token{ ELSE, identStr };
 			}
 
 			// Handle bools
 			else if (identStr == "true" || identStr == "false") {
-				return Token{ BOOL, identStr };
+				currentToken = Token{ BOOL, identStr };
 			}
 
 			// just an identifier
 			else {
-				return Token{ IDENTIFIER, identStr };
+				currentToken = Token{ IDENTIFIER, identStr };
 			}
 		}
 
 		// Operators
 		else if (isBinOp(lookChar)) {
-			return { Token(BINOP, std::string(1, lookChar)) };
+			currentToken = Token(BINOP, std::string(1, lookChar));
 			//switch (lookChar) {
 			//case '+':
 			//	return{ Token(PLUS, "+") };
@@ -76,28 +80,30 @@ namespace Compiler {
 
 		// Parentheses
 		else if (lookChar == '(') {
-			return Token{ LEFTPAREN, "(" };
+			currentToken = Token{ LEFTPAREN, "(" };
 		}
 
 		else if (lookChar == ')') {
-			return Token{ RIGHTPAREN, ")" };
+			currentToken = Token{ RIGHTPAREN, ")" };
 		}
 
 		// String literals
 		else if (lookChar == '"') {
 			std::string strLit = getString();
-			return Token{ STRING, strLit };
+			currentToken = Token{ STRING, strLit };
 		}
 
 		// End of input
 		else if (lookChar == ';') {
-			return Token{ END, ";" };
+			currentToken = Token{ END, ";" };
 		}
 
 		// Otherwise
 		else {
 			error("Unexpected " + std::string(1, lookChar) + " in input");
 		}
+
+		return currentToken;
 	}
 
 	/* Methods */
