@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+//// TODO work out which of the getNextTokens should be getCurrentToken.
+
 namespace Compiler {
 	void Parser::parse()
 	{
@@ -17,13 +19,13 @@ namespace Compiler {
 
 	// Deal with sub expression
 	std::unique_ptr<AST> Parser::parseAtom() {
-		// Get next token
-		Token curTok = _scanner.getToken();
+		// Get the current token
+		Token curTok = _scanner.getCurrentToken();
 
 		// Found a left parenthesis, start of sub expression.
 		if (curTok.getType() == LEFTPAREN) {
-			curTok = _scanner.getToken();
 			std::unique_ptr<AST> val = parseExpression(1);
+			curTok = _scanner.getNextToken();
 			// Closing ) should follow sub expression
 			if (curTok.getType() != RIGHTPAREN) {
 				error("Unmatched '('");
@@ -59,16 +61,10 @@ namespace Compiler {
 		std::unique_ptr<AST> subExpLhs = parseAtom();
 
 		while (true) {
-			Token curTok;
-			try {
-				curTok = _scanner.getToken();
-			}
-			catch (std::exception &e) {
-				break;
-			}
+			Token curTok = _scanner.getCurrentToken();
 
 			// We have a number for the lhs of the expression, or precedence is less than minimum
-			if (curTok.getType() == END || curTok.getType() != BINOP || opInfoMap.at(curTok.getValue()).precedence < minPrec) {
+			if (curTok.getType() == END || curTok.getType() == RIGHTPAREN || curTok.getType() != BINOP || opInfoMap.at(curTok.getValue()).precedence < minPrec) {
 				break;
 			}
 
@@ -81,6 +77,9 @@ namespace Compiler {
 			Associativity assoc = opInfoMap.at(op).assoc;
 			// If assoc is left, prec + 1, else prec
 			int nextMinPrec = (assoc == LEFT) ? prec + 1 : prec;
+
+			// ???
+			_scanner.getNextToken();
 
 			std::unique_ptr<AST> subExpRhs = parseExpression(nextMinPrec);
 
