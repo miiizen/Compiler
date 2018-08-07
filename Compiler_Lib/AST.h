@@ -29,24 +29,14 @@ namespace Compiler {
 		VariableAST(const std::string &name) : name(name) {}
 	};
 
-	//// Represents binary operators.  Can have 2 children
-	//class BinaryOpAST : public AST {
-	//	std::string op;
-	//	std::unique_ptr<AST> lhs, rhs;
-
-	//public:
-	//	BinaryOpAST(std::string op, std::unique_ptr<AST> lhs, std::unique_ptr<AST> rhs)
-	//		: op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
-	//};
-	
 	// Represents binary operators.  Can have 2 children
 	class BinaryOpAST : public AST {
 		std::string op;
-		AST lhs, rhs;
+		std::unique_ptr<AST> lhs, rhs;
 
 	public:
-		BinaryOpAST(std::string op, AST lhs, AST rhs)
-			: op(op), lhs(lhs), rhs(rhs) {}
+		BinaryOpAST(std::string op, std::unique_ptr<AST> lhs, std::unique_ptr<AST> rhs)
+			: op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 	};
 }
 

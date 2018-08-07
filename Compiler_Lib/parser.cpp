@@ -16,14 +16,14 @@ namespace Compiler {
 	}
 
 	// Deal with sub expression
-	AST Parser::parseAtom() {
+	std::unique_ptr<AST> Parser::parseAtom() {
 		// Get next token
 		Token curTok = _scanner.getToken();
 
 		// Found a left parenthesis, start of sub expression.
 		if (curTok.getType() == LEFTPAREN) {
 			curTok = _scanner.getToken();
-			AST val = parseExpression(1);
+			std::unique_ptr<AST> val = parseExpression(1);
 			// Closing ) should follow sub expression
 			if (curTok.getType() != RIGHTPAREN) {
 				error("Unmatched '('");
@@ -40,27 +40,29 @@ namespace Compiler {
 		}
 		// Deal with a single number
 		// Create AST node
-		else if(curTok.getType() == NUMBER) {
+		else if (curTok.getType() == NUMBER) {
 			double val = std::stod(curTok.getValue());
 			NumberAST num = NumberAST(val);
-			return num;
+			std::unique_ptr<AST> unum = std::make_unique<AST>(num);
+			return unum;
 		}
 		// TODO deal with a variable/identifier
 		else if (curTok.getType() == IDENTIFIER) {
 			VariableAST var = VariableAST(curTok.getValue());
-			return var;
+			std::unique_ptr<AST> uvar = std::make_unique<AST>(var);
+			return uvar;
 		}
 	}
 
-	AST Parser::parseExpression(int minPrec)
+	std::unique_ptr<AST> Parser::parseExpression(int minPrec)
 	{
-		AST subExpLhs = parseAtom();
+		std::unique_ptr<AST> subExpLhs = parseAtom();
 
 		while (true) {
 			Token curTok;
 			try {
 				curTok = _scanner.getToken();
-			} 
+			}
 			catch (std::exception &e) {
 				break;
 			}
@@ -80,22 +82,18 @@ namespace Compiler {
 			// If assoc is left, prec + 1, else prec
 			int nextMinPrec = (assoc == LEFT) ? prec + 1 : prec;
 
-			AST subExpRhs = parseExpression(nextMinPrec);
+			std::unique_ptr<AST> subExpRhs = parseExpression(nextMinPrec);
 
 			// Update lhs with new value
 			// TODO we need to work out what we actually want to do here, implementation details please
-			subExpLhs = parseOp(op, subExpLhs, subExpRhs);
+			subExpLhs = parseOp(op, std::move(subExpLhs), std::move(subExpRhs));
 		}
 
 		return subExpLhs;
 	}
-	AST Parser::parseOp(std::string opType, AST subExpLhs, AST subExpRhs)
+	std::unique_ptr<AST> Parser::parseOp(std::string opType, std::unique_ptr<AST> subExpLhs, std::unique_ptr<AST> subExpRhs)
 	{
-		// Prepare unique pointers for both sides
-		/*std::unique_ptr<AST> lhs(&subExpLhs);
-		std::unique_ptr<AST> rhs(&subExpRhs);*/
-
-		BinaryOpAST binOp = BinaryOpAST(opType, subExpLhs, subExpRhs);
+		std::unique_ptr<BinaryOpAST> binOp = std::make_unique<BinaryOpAST>(opType, std::move(subExpLhs), std::move(subExpRhs));
 		return binOp;
 	}
 }

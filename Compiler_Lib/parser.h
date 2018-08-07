@@ -58,11 +58,11 @@ namespace Compiler {
 		/* Parsing */
 		// PRECEDENCE CLIMBING
 		// Deal with sub expression TODO Should this return Token?
-		AST parseAtom();
+		std::unique_ptr<AST> parseAtom();
 		// Math expression - precedence climbing
-		AST parseExpression(int minPrec);
+		std::unique_ptr<AST> parseExpression(int minPrec);
 		// Deal with operator
-		AST parseOp(std::string opType, AST subExpLhs, AST subExpRhs);
+		std::unique_ptr<AST> parseOp(std::string opType, std::unique_ptr<AST> subExpLhs, std::unique_ptr<AST> subExpRhs);
 	};
 }
 #endif
