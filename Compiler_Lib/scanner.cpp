@@ -5,7 +5,7 @@
 #include <string>
 
 namespace Compiler {
-	Token Scanner::getCurrentToken()
+	Token Scanner::getCurrentToken() const
 	{
 		return currentToken;
 	}

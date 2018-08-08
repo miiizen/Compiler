@@ -9,6 +9,8 @@
 namespace Compiler {
 	void Parser::parse()
 	{
+		// Advance to first token
+		_scanner.getNextToken();
 		parseExpression(1);
 	}
 	void Parser::error(std::string message)
@@ -24,12 +26,13 @@ namespace Compiler {
 
 		// Found a left parenthesis, start of sub expression.
 		if (curTok.getType() == LEFTPAREN) {
+			_scanner.getNextToken();
 			std::unique_ptr<AST> val = parseExpression(1);
-			curTok = _scanner.getNextToken();
 			// Closing ) should follow sub expression
-			if (curTok.getType() != RIGHTPAREN) {
+			if (_scanner.getCurrentToken().getType() != RIGHTPAREN) {
 				error("Unmatched '('");
 			}
+			_scanner.getNextToken();
 			return val;
 		}
 		// If source ends... This should be picked up in the scanner I think?
@@ -44,14 +47,14 @@ namespace Compiler {
 		// Create AST node
 		else if (curTok.getType() == NUMBER) {
 			double val = std::stod(curTok.getValue());
-			NumberAST num = NumberAST(val);
-			std::unique_ptr<AST> unum = std::make_unique<AST>(num);
+			std::unique_ptr<NumberAST> unum = std::make_unique<NumberAST>(val);
+			_scanner.getNextToken();
 			return unum;
 		}
 		// TODO deal with a variable/identifier
 		else if (curTok.getType() == IDENTIFIER) {
-			VariableAST var = VariableAST(curTok.getValue());
-			std::unique_ptr<AST> uvar = std::make_unique<AST>(var);
+			std::unique_ptr<VariableAST> uvar = std::make_unique<VariableAST>(curTok.getValue());
+			_scanner.getNextToken();
 			return uvar;
 		}
 	}
@@ -78,18 +81,16 @@ namespace Compiler {
 			// If assoc is left, prec + 1, else prec
 			int nextMinPrec = (assoc == LEFT) ? prec + 1 : prec;
 
-			// ???
 			_scanner.getNextToken();
-
 			std::unique_ptr<AST> subExpRhs = parseExpression(nextMinPrec);
 
 			// Update lhs with new value
-			// TODO we need to work out what we actually want to do here, implementation details please
 			subExpLhs = parseOp(op, std::move(subExpLhs), std::move(subExpRhs));
 		}
 
 		return subExpLhs;
 	}
+
 	std::unique_ptr<AST> Parser::parseOp(std::string opType, std::unique_ptr<AST> subExpLhs, std::unique_ptr<AST> subExpRhs)
 	{
 		std::unique_ptr<BinaryOpAST> binOp = std::make_unique<BinaryOpAST>(opType, std::move(subExpLhs), std::move(subExpRhs));

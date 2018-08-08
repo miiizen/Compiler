@@ -15,7 +15,7 @@ namespace Compiler {
 			: _inp{ inp }
 		{ }
 		// Return the current token
-		Token getCurrentToken();
+		Token getCurrentToken() const;
 		// Get the next token from input stream
 		Token getNextToken();
 
