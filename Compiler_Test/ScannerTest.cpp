@@ -27,8 +27,34 @@ TEST(ScannerTest, HandlesInt) {
 	exp = Token(NUMBER, "128");
 	result = myScan.getNextToken();
 
-	ASSERT_EQ(exp, result);
+	ASSERT_EQ(exp, result) << "Failed to recover from alpha character in number";
 	//ASSERT_THROW(myScan.getNextToken(), std::string) << "Failed to throw error on integer containing an alpha character";
+}
+
+TEST(ScannerTest, HandlesFloat) {
+	// Handles single digit before + after
+	Scanner myScan = Scanner("1.1;");
+	Token exp = Token(NUMBER, "1.1");
+	Token result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to handle single digit before + after .";
+
+	// Handles multiple digits
+	myScan = Scanner("12.34");
+	exp = Token(NUMBER, "12.34");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to handle multiple digits before + after .";
+
+	// Test failures too
+
+	myScan = Scanner("12.r4");
+	exp = Token(NUMBER, "12.4");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to recover from unexpected chracter";
+
+
 }
 
 TEST(ScannerTest, HandlesKeywords) {

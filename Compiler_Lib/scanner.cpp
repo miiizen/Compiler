@@ -9,6 +9,7 @@ namespace Compiler {
 	{
 		return currentToken;
 	}
+
 	// Return the next token from input stream
 	Token Scanner::getNextToken() {
 		Token curTok;
@@ -214,12 +215,21 @@ namespace Compiler {
 		return identStr;
 	}
 
-	// <number> ::= [<digit>]+
+	// <number> ::= [<digit>]+.[<digit>]+
 	std::string Scanner::getNum() {
 		// SHOULD CHECK FOR STARTING DIGIT BEFORE CALL TO ME
 		std::string numStr(1, lookChar);
 		while (isdigit(peekChar())) {
 			numStr += nextChar();
+		}
+
+		// deal with decimal point
+		if (peekChar() == '.') {
+			numStr += nextChar();
+			// get remaining number after decimal point
+			while (isdigit(peekChar())) {
+				numStr += nextChar();
+			}
 		}
 
 		// make sure only legal separators come after the number
