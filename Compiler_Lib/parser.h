@@ -30,7 +30,7 @@ namespace Compiler {
 		{ "-", OpInfo(1, LEFT) },
 		{ "*", OpInfo(2, LEFT) },
 		{ "/", OpInfo(2, LEFT) },
-		{ "*", OpInfo(3, RIGHT) },
+		{ "^", OpInfo(3, RIGHT) }
 	};
 
 	// Takes series of tokens and attempts to parse them
@@ -43,7 +43,7 @@ namespace Compiler {
 		{ }
 
 		// Start recursive descent parsing
-		void parse();
+		std::unique_ptr<AST> parse();
 
 	private:
 		// Input string
@@ -62,7 +62,7 @@ namespace Compiler {
 		// Math expression - precedence climbing
 		std::unique_ptr<AST> parseExpression(int minPrec);
 		// Deal with operator
-		std::unique_ptr<AST> parseOp(std::string opType, std::unique_ptr<AST> subExpLhs, std::unique_ptr<AST> subExpRhs);
+		std::unique_ptr<AST> parseOp(const std::string& opType, std::unique_ptr<AST> subExpLhs, std::unique_ptr<AST> subExpRhs);
 	};
 }
 #endif

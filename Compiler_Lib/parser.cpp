@@ -7,12 +7,13 @@
 //// TODO work out which of the getNextTokens should be getCurrentToken.
 
 namespace Compiler {
-	void Parser::parse()
+	std::unique_ptr<AST> Parser::parse()
 	{
 		// Advance to first token
 		_scanner.getNextToken();
-		parseExpression(1);
+		return parseExpression(1);
 	}
+
 	void Parser::error(std::string message)
 	{
 		throw message;
@@ -91,7 +92,7 @@ namespace Compiler {
 		return subExpLhs;
 	}
 
-	std::unique_ptr<AST> Parser::parseOp(std::string opType, std::unique_ptr<AST> subExpLhs, std::unique_ptr<AST> subExpRhs)
+	std::unique_ptr<AST> Parser::parseOp(const std::string& opType, std::unique_ptr<AST> subExpLhs, std::unique_ptr<AST> subExpRhs)
 	{
 		std::unique_ptr<BinaryOpAST> binOp = std::make_unique<BinaryOpAST>(opType, std::move(subExpLhs), std::move(subExpRhs));
 		return binOp;
