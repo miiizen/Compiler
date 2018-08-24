@@ -93,40 +93,88 @@ TEST(ScannerTest, HandlesIdentifiers) {
 
 TEST(ScannerTest, HandlesOperators) {
 	Scanner myScan = Scanner("+;");
-	Token exp = Token(BINOP, "+");
+	Token exp = Token(PLUS, "+");
 	Token result = myScan.getNextToken();
 
-	ASSERT_EQ(exp, result) << "Failed to get binary '+' operator";
+	ASSERT_EQ(exp, result) << "Failed to get '+' operator";
 
 	myScan = Scanner("-;");
-	exp = Token(BINOP, "-");
+	exp = Token(MINUS, "-");
 	result = myScan.getNextToken();
 
-	ASSERT_EQ(exp, result) << "Failed to get binary '-' operator";
+	ASSERT_EQ(exp, result) << "Failed to get '-' operator";
 
 	myScan = Scanner("*;");
-	exp = Token(BINOP, "*");
+	exp = Token(STAR, "*");
 	result = myScan.getNextToken();
 
-	ASSERT_EQ(exp, result) << "Failed to get binary '*' operator";
+	ASSERT_EQ(exp, result) << "Failed to get '*' operator";
 
 	myScan = Scanner("/;");
-	exp = Token(BINOP, "/");
+	exp = Token(SLASH, "/");
 	result = myScan.getNextToken();
 
-	ASSERT_EQ(exp, result) << "Failed to get binary '/' operator";
+	ASSERT_EQ(exp, result) << "Failed to get '/' operator";
 
 	myScan = Scanner("^;");
-	exp = Token(BINOP, "^");
+	exp = Token(HAT, "^");
 	result = myScan.getNextToken();
 
-	ASSERT_EQ(exp, result) << "Failed to get binary '^' operator";
+	ASSERT_EQ(exp, result) << "Failed to get '^' operator";
 
-	myScan = Scanner("-;");
-	exp = Token(BINOP, "-");
+	myScan = Scanner("==;");
+	exp = Token(EQ, "==");
 	result = myScan.getNextToken();
 
-	ASSERT_EQ(exp, result) << "Failed to get binary '-' operator";
+	ASSERT_EQ(exp, result) << "Failed to get '==' operator";
+
+	myScan = Scanner("<;");
+	exp = Token(LESS, "<");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to get '<' operator";
+
+	myScan = Scanner(">;");
+	exp = Token(GREATER, ">");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to get '>' operator";
+
+	myScan = Scanner("<=;");
+	exp = Token(LEQ, "<=");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to get '<=' operator";
+
+	myScan = Scanner(">=;");
+	exp = Token(GREQ, ">=");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to get '>=' operator";
+
+	myScan = Scanner("&&;");
+	exp = Token(AND, "&&");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to get '&&' operator";
+
+	myScan = Scanner("||;");
+	exp = Token(OR, "||");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to get '||' operator";
+
+	myScan = Scanner("!;");
+	exp = Token(NOT, "!");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to get '!' operator";
+
+	myScan = Scanner("=;");
+	exp = Token(ASSIGN, "=");
+	result = myScan.getNextToken();
+
+	ASSERT_EQ(exp, result) << "Failed to get '=' operator";
 }
 
 TEST(ScannerTest, HandlesExpressions) {
@@ -135,7 +183,7 @@ TEST(ScannerTest, HandlesExpressions) {
 		Scanner myScan = Scanner("12+3;");
 		Token result;
 		std::vector<Token> results;
-		std::vector<Token> exp{ Token(NUMBER, "12"), Token(BINOP, "+"), Token(NUMBER, "3"), Token(END, ";") };
+		std::vector<Token> exp{ Token(NUMBER, "12"), Token(PLUS, "+"), Token(NUMBER, "3"), Token(END, ";") };
 		do {
 			result = myScan.getNextToken();
 			results.push_back(result);
@@ -149,7 +197,7 @@ TEST(ScannerTest, HandlesExpressions) {
 		Scanner myScan = Scanner("12 + 3;");
 		Token result;
 		std::vector<Token> results;
-		std::vector<Token> exp{ Token(NUMBER, "12"), Token(BINOP, "+"), Token(NUMBER, "3"), Token(END, ";") };
+		std::vector<Token> exp{ Token(NUMBER, "12"), Token(PLUS, "+"), Token(NUMBER, "3"), Token(END, ";") };
 		do {
 			result = myScan.getNextToken();
 			results.push_back(result);
@@ -163,7 +211,7 @@ TEST(ScannerTest, HandlesExpressions) {
 		Scanner myScan = Scanner("(12 + 3) * 5;");
 		Token result;
 		std::vector<Token> results;
-		std::vector<Token> exp{ Token(LEFTPAREN, "("), Token(NUMBER, "12"), Token(BINOP, "+"), Token(NUMBER, "3"),Token(RIGHTPAREN, ")"), Token(BINOP, "*"), Token(NUMBER, "5"), Token(END, ";") };
+		std::vector<Token> exp{ Token(LEFTPAREN, "("), Token(NUMBER, "12"), Token(PLUS, "+"), Token(NUMBER, "3"),Token(RIGHTPAREN, ")"), Token(STAR, "*"), Token(NUMBER, "5"), Token(END, ";") };
 		do {
 			result = myScan.getNextToken();
 			results.push_back(result);

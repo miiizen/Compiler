@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "token.h"
-#include "scanner.h"
 #include <iostream>
 #include <string>
+#include "token.h"
+#include "scanner.h"
 
 namespace Compiler {
 	Token Scanner::getCurrentToken() const
@@ -18,7 +18,6 @@ namespace Compiler {
 		// skip comment
 		if (lookChar == '#') {
 			// Skip until EOL
-			char c;
 			do {
 				nextChar();
 			} while (lookChar != '\n');
@@ -63,20 +62,59 @@ namespace Compiler {
 		}
 
 		// Operators
-		else if (isBinOp(lookChar)) {
-			currentToken = Token(BINOP, std::string(1, lookChar));
-			//switch (lookChar) {
-			//case '+':
-			//	return{ Token(PLUS, "+") };
-			//case '-':
-			//	return{ Token(MINUS, "-") };
-			//case '*':
-			//	return{ Token(MULTIPLY, "*") };
-			//case '/':
-			//	return{ Token(DIVIDE, "/") };
-			//case '^':
-			//	return{ Token(POW, "^") };
-			//}
+		else if (isOp(lookChar)) {
+			std::string opStr = getOp();
+			// numeric binary operators
+			if (opStr == "+") {
+				currentToken = Token{ PLUS, "+" };
+			}
+			else if (opStr == "-") {
+				currentToken = Token{ MINUS, "-" };
+			}
+			else if (opStr == "*") {
+				currentToken = Token{ STAR, "*" };
+			}
+			else if (opStr == "/") {
+				currentToken = Token{ SLASH, "/" };
+			}
+			else if (opStr == "^") {
+				currentToken = Token{ HAT, "^" };
+			}
+
+			// Comparison binary operators
+			else if (opStr == "==") {
+				currentToken = Token{ EQ, "==" };
+			}
+			else if (opStr == "<") {
+				currentToken = Token{ LESS, "<" };
+			}
+			else if (opStr == ">") {
+				currentToken = Token{ GREATER, ">" };
+			}
+			else if (opStr == "<=") {
+				currentToken = Token{ LEQ, "<=" };
+			}
+			else if (opStr == ">=") {
+				currentToken = Token{ GREQ, ">=" };
+			}
+
+			// Logical
+			else if (opStr == "&&") {
+				currentToken = Token{ AND, "&&" };
+			}
+			else if (opStr == "||") {
+				currentToken = Token{ OR, "||" };
+			}
+			else if (opStr == "!") {
+				currentToken = Token{ NOT, "!" };
+			}
+
+			else if (opStr == "=") {
+				currentToken = Token{ ASSIGN, "=" };
+			}
+			else {
+				error("Invalid operator '" + opStr + "'");
+			}
 		}
 
 		// Parentheses
@@ -165,27 +203,27 @@ namespace Compiler {
 
 	/* Recognisers */
 
-	bool Scanner::isBinOp(const char &op) const {
+	bool Scanner::isOp(const char &op) const {
+		// Switch all characters which may start an operand
 		switch (op) {
 		case '+':
 		case '-':
 		case '*':
 		case '/':
 		case '^':
+		case '=':
+		case '>':
+		case '<':
+		case '!':
+		case '|':
+		case '&':
 			return true;
 		default:
 			return false;
 		}
 	}
 
-	bool Scanner::isUnOp(const char &op) const {
-		switch (op) {
-		case '-':
-			return true;
-		default:
-			return false;
-		}
-	}
+
 
 	bool Scanner::isWhite(const char &op) const {
 		if (op == ' ' || op == '\n' || op == '\t') {
@@ -234,7 +272,7 @@ namespace Compiler {
 
 		// make sure only legal separators come after the number
 		char peek{ peekChar() };
-		if (!isWhite(peek) && peek != ')' && peek != ';' && !isBinOp(peek) && !isUnOp(peek)) {
+		if (!isWhite(peek) && peek != ')' && peek != ';' && !isOp(peek)) {
 			error("Unexpected " + std::string(1, peek) + " in digit");
 		}
 		skipWhite();
@@ -261,11 +299,10 @@ namespace Compiler {
 	{
 		// SHOULD CHECK FOR FIRST CHAR BEFORE CALL TO ME
 		std::string opStr(1, lookChar);
-		while (isBinOp(peekChar()) || isUnOp(peekChar())) {
+		while (isOp(peekChar())) {
 			opStr += nextChar();
 		}
 		skipWhite();
 		return opStr;
 	}
-
 }

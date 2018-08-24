@@ -40,10 +40,8 @@ namespace Compiler {
 		void error(std::string message);
 
 		/* Recognisers */
-		// Recognise a binary operator
-		bool isBinOp(const char &op) const;
-		// Recognise a unary operator
-		bool isUnOp(const char &op) const;
+		// Recognise an operator
+		bool isOp(const char &op) const;
 		// Recognise whitespace
 		bool isWhite(const char &op) const;
 

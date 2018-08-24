@@ -38,6 +38,16 @@ namespace Compiler {
 		BinaryOpAST(std::string op, std::unique_ptr<AST> lhs, std::unique_ptr<AST> rhs)
 			: op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 	};
+
+	// Represents a unary prefix operator
+	class PrefixOpAST : public AST {
+		std::string op;
+		std::unique_ptr<AST> operand;
+
+	public:
+		PrefixOpAST(std::string op, std::unique_ptr<AST> operand)
+			: op(op), operand(std::move(operand)) {}
+	};
 }
 
 #endif

@@ -8,7 +8,12 @@
 namespace Compiler {
 	// Enum representing different types of token
 	enum TokenType {
-		BINOP, UNOP,
+		// Operators
+		PLUS, MINUS, STAR, SLASH, HAT,
+		EQ, LESS, GREATER, LEQ, GREQ,
+		AND, OR, NOT,
+		ASSIGN,
+
 		LEFTPAREN, RIGHTPAREN,
 		NUMBER, STRING, IDENTIFIER, BOOL,
 		IF, ENDIF, ELSE,
