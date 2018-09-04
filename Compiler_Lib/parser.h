@@ -34,12 +34,30 @@ namespace Compiler {
 	};
 
 	// Interface for infix operator
-	class IInfix {
+	class IInfixParser {
 	public:
-		virtual ~IInfix() = 0;
+		virtual ~IInfixParser() = default;
 
-		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, Token tok) = 0;
+		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok) = 0;
 		virtual int getPrecedence() = 0;
+	};
+
+	// Binary op parser
+	class BinaryOperatorParser : public IInfixParser {
+	public:
+		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
+	};
+
+	// Postfix op parser
+	class PostfixOperatorParser : public IInfixParser {
+	public:
+		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
+	};
+
+	// Ternary operator parser
+	class TernaryOperatorParser : public IInfixParser {
+	public:
+		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
 	};
 
 	/*		OP INFO		*/
@@ -80,7 +98,7 @@ namespace Compiler {
 		void registerPrefixTok(TokenType tok, std::unique_ptr<IPrefixParser> parseModule);
 
 		// Register infix tokens for use in the parser
-		void registerInfixTok(TokenType tok, std::unique_ptr<IInfix> parseModule);
+		void registerInfixTok(TokenType tok, std::unique_ptr<IInfixParser> parseModule);
 
 		// Register prefix unary operator
 		void prefix(TokenType tok);
@@ -98,6 +116,8 @@ namespace Compiler {
 		Scanner _scanner;
 		// Map of prefix parser chunks
 		std::map <TokenType, std::shared_ptr<IPrefixParser>> prefixMap = {};
+		// Map of infix parser chunks
+		std::map <TokenType, std::shared_ptr<IInfixParser>> infixMap = {};
 
 		/* Methods */
 		// Return an error
