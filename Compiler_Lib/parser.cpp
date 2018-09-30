@@ -146,20 +146,18 @@ namespace Compiler {
 		// Get expression tree for the prefix
 		std::unique_ptr<AST> left = prefix->parse(this, tok);
 
-		tok = _scanner.getNextToken();
-
 		// Get next token and see if we have an infix expression to parse
+		// TODO NEED LOOKAHEAD TOKEN?
+		tok = _scanner.getNextToken();
 		std::shared_ptr<IInfixParser> infix;
 		while (precedence < getPrecedence(tok)) {
+
 			if (infixMap.count(tok.getType()) == 1) {
 				infix = infixMap.at(tok.getType());
-				return infix->parse(this, std::move(left), tok);
+				left = infix->parse(this, std::move(left), tok);
 			}
-			else {
-				return left;
-			}
-		}
 
+		}
 		return left;
 	}
 

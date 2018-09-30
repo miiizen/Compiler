@@ -152,11 +152,6 @@ namespace Compiler {
 		std::map <TokenType, std::shared_ptr<IPrefixParser>> prefixMap = {};
 		// Map of infix parser chunks
 		std::map <TokenType, std::shared_ptr<IInfixParser>> infixMap = {};
-
-		/* Methods */
-
-
-
 	};
 }
 #endif
