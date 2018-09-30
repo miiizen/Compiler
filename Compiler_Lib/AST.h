@@ -22,11 +22,21 @@ namespace Compiler {
 	};
 
 	// Represents a variable
-	class VariableAST : public AST {
-		std::string name;
+	class NameAST : public AST {
 
 	public:
-		VariableAST(const std::string &name) : name(name) {}
+		std::string name;
+		NameAST(const std::string &name) : name(name) {}
+	};
+
+	// Represents an assignment expression
+	class AssignmentAST : public AST {
+		std::string name;
+		std::unique_ptr<AST> rhs;
+
+	public:
+		AssignmentAST(std::string name, std::unique_ptr<AST> rhs)
+			: name(name), rhs(std::move(rhs)) {}
 	};
 
 	// Represents binary operators.  Can have 2 children
