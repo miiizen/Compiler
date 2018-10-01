@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <deque>
 #include "token.h"
 
 namespace Compiler {
@@ -16,8 +17,9 @@ namespace Compiler {
 		{ }
 		// Return the current token
 		Token getCurrentToken() const;
-		// Get the next token from input stream
-		Token getNextToken();
+		Token consume();
+		// Get a queue of lookahead tokens.  This allows the parser to be LL(k)
+		Token lookAhead(int distance);
 
 	private:
 		// Input stream
@@ -27,9 +29,14 @@ namespace Compiler {
 		// The lookahead character read
 		char lookChar;
 		// Current token
-		Token currentToken;
+		//Token currentToken;
+		// Queue of upcoming tokens
+		std::deque<Token> tokQueue;
+
 
 		/* Methods */
+		// Get the next token from input stream
+		Token getNextToken();
 		// Return next character, increase pos
 		char nextChar();
 		// Peek next character without increasing pos

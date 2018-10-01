@@ -7,7 +7,7 @@
 namespace Compiler {
 	Token Scanner::getCurrentToken() const
 	{
-		return currentToken;
+		return tokQueue.front();
 	}
 
 	// Return the next token from input stream
@@ -32,7 +32,7 @@ namespace Compiler {
 		// Numbers
 		if (isdigit(lookChar)) {
 			std::string numStr{ getNum() };
-			currentToken = Token{ NUMBER, numStr };
+			tokQueue.push_back(Token{ NUMBER, numStr });
 		}
 		// Identifiers
 		else if (isalpha(lookChar)) {
@@ -40,24 +40,24 @@ namespace Compiler {
 
 			// Handle keywords
 			if (identStr == "if") {
-				currentToken = Token{ IF, identStr };
+				tokQueue.push_back(Token{ IF, identStr });
 			}
 			else if (identStr == "endif") {
-				currentToken = Token{ ENDIF, identStr };
+				tokQueue.push_back(Token{ ENDIF, identStr });
 			}
 
 			else if (identStr == "else") {
-				currentToken = Token{ ELSE, identStr };
+				tokQueue.push_back(Token{ ELSE, identStr });
 			}
 
 			// Handle bools
 			else if (identStr == "true" || identStr == "false") {
-				currentToken = Token{ BOOL, identStr };
+				tokQueue.push_back(Token{ BOOL, identStr });
 			}
 
 			// just an identifier
 			else {
-				currentToken = Token{ IDENTIFIER, identStr };
+				tokQueue.push_back(Token{ IDENTIFIER, identStr });
 			}
 		}
 
@@ -66,51 +66,51 @@ namespace Compiler {
 			std::string opStr = getOp();
 			// numeric binary operators
 			if (opStr == "+") {
-				currentToken = Token{ PLUS, "+" };
+				tokQueue.push_back(Token{ PLUS, "+" });
 			}
 			else if (opStr == "-") {
-				currentToken = Token{ MINUS, "-" };
+				tokQueue.push_back(Token{ MINUS, "-" });
 			}
 			else if (opStr == "*") {
-				currentToken = Token{ STAR, "*" };
+				tokQueue.push_back(Token{ STAR, "*" });
 			}
 			else if (opStr == "/") {
-				currentToken = Token{ SLASH, "/" };
+				tokQueue.push_back(Token{ SLASH, "/" });
 			}
 			else if (opStr == "^") {
-				currentToken = Token{ HAT, "^" };
+				tokQueue.push_back(Token{ HAT, "^" });
 			}
 
 			// Comparison binary operators
 			else if (opStr == "==") {
-				currentToken = Token{ EQ, "==" };
+				tokQueue.push_back(Token{ EQ, "==" });
 			}
 			else if (opStr == "<") {
-				currentToken = Token{ LESS, "<" };
+				tokQueue.push_back(Token{ LESS, "<" });
 			}
 			else if (opStr == ">") {
-				currentToken = Token{ GREATER, ">" };
+				tokQueue.push_back(Token{ GREATER, ">" });
 			}
 			else if (opStr == "<=") {
-				currentToken = Token{ LEQ, "<=" };
+				tokQueue.push_back(Token{ LEQ, "<=" });
 			}
 			else if (opStr == ">=") {
-				currentToken = Token{ GREQ, ">=" };
+				tokQueue.push_back(Token{ GREQ, ">=" });
 			}
 
 			// Logical
 			else if (opStr == "&&") {
-				currentToken = Token{ AND, "&&" };
+				tokQueue.push_back(Token{ AND, "&&" });
 			}
 			else if (opStr == "||") {
-				currentToken = Token{ OR, "||" };
+				tokQueue.push_back(Token{ OR, "||" });
 			}
 			else if (opStr == "!") {
-				currentToken = Token{ NOT, "!" };
+				tokQueue.push_back(Token{ NOT, "!" });
 			}
 
 			else if (opStr == "=") {
-				currentToken = Token{ ASSIGN, "=" };
+				tokQueue.push_back(Token{ ASSIGN, "=" });
 			}
 			else {
 				error("Invalid operator '" + opStr + "'");
@@ -119,22 +119,22 @@ namespace Compiler {
 
 		// Parentheses
 		else if (lookChar == '(') {
-			currentToken = Token{ LEFTPAREN, "(" };
+			tokQueue.push_back(Token{ LEFTPAREN, "(" });
 		}
 
 		else if (lookChar == ')') {
-			currentToken = Token{ RIGHTPAREN, ")" };
+			tokQueue.push_back(Token{ RIGHTPAREN, ")" });
 		}
 
 		// String literals
 		else if (lookChar == '"') {
 			std::string strLit = getString();
-			currentToken = Token{ STRING, strLit };
+			tokQueue.push_back(Token{ STRING, strLit });
 		}
 
 		// End of input
 		else if (lookChar == ';') {
-			currentToken = Token{ END, ";" };
+			tokQueue.push_back(Token{ END, ");" });
 		}
 
 		// Otherwise
@@ -142,7 +142,26 @@ namespace Compiler {
 			error("Unexpected " + std::string(1, lookChar) + " in input");
 		}
 
-		return currentToken;
+		// Return value just added to the queue
+		return tokQueue.back();
+	}
+
+	Token Scanner::consume() {
+		// Read token
+		lookAhead(0);
+
+		Token ret = tokQueue.front();
+		tokQueue.pop_front();
+
+		return ret;
+	}
+
+	// Get and return the next n tokens
+	Token Scanner::lookAhead(int distance) {
+		for (int i = -1; i++; i > distance) {
+			getNextToken();
+		}
+		return tokQueue.at(distance);
 	}
 
 	/* Methods */
