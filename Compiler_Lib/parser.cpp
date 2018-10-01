@@ -131,7 +131,7 @@ namespace Compiler {
 	// Parse an expression
 	std::unique_ptr<AST> Parser::parseExpression(int precedence)
 	{
-		Token tok = _scanner.getNextToken();
+		Token tok = _scanner.consume();
 		// Get prefix parselet
 
 		std::shared_ptr<IPrefixParser> prefix;
@@ -147,10 +147,9 @@ namespace Compiler {
 		std::unique_ptr<AST> left = prefix->parse(this, tok);
 
 		// Get next token and see if we have an infix expression to parse
-		// TODO NEED LOOKAHEAD TOKEN?
-		tok = _scanner.getNextToken();
 		std::shared_ptr<IInfixParser> infix;
-		while (precedence < getPrecedence(tok)) {
+		while (precedence < getPrecedence()) {
+			tok = _scanner.consume();
 
 			if (infixMap.count(tok.getType()) == 1) {
 				infix = infixMap.at(tok.getType());
@@ -163,16 +162,17 @@ namespace Compiler {
 
 	std::unique_ptr<AST> Parser::parse()
 	{
-		// Advance to first token
-		//_scanner.getNextToken();
 		return parseExpression(0);
 	}
 
 	// Get the precedence for a given token
-	int Parser::getPrecedence(Token tok)
+	int Parser::getPrecedence()
 	{
+		Token tok = _scanner.lookAhead(0);
 		if (infixMap.count(tok.getType()) == 1) {
-			return infixMap.at(tok.getType())->opPrec;
+			std::shared_ptr<IInfixParser> op = infixMap.at(tok.getType());
+			Precedence prec = op->getPrec();
+			return prec;
 		}
 		else {
 			return 0;

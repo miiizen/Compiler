@@ -61,7 +61,8 @@ namespace Compiler {
 		virtual ~IInfixParser() = default;
 
 		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok) = 0;
-		Precedence opPrec;
+		// Virtual method to return children's data
+		virtual Precedence getPrec() = 0;
 
 	};
 
@@ -71,6 +72,7 @@ namespace Compiler {
 		BinaryOperatorParser(Precedence prec, bool right)
 			: opPrec(prec), isRight(right) {}
 		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
+		virtual Precedence getPrec() { return opPrec; };
 		Precedence opPrec;
 		bool isRight;
 	};
@@ -81,6 +83,7 @@ namespace Compiler {
 		PostfixOperatorParser(Precedence prec)
 			: opPrec(prec) {}
 		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
+		virtual Precedence getPrec() { return opPrec; };
 		Precedence opPrec;
 	};
 
@@ -90,6 +93,7 @@ namespace Compiler {
 		TernaryOperatorParser(Precedence prec)
 			: opPrec(prec) {}
 		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
+		virtual Precedence getPrec() { return opPrec; };
 		Precedence opPrec;
 	};
 
@@ -99,6 +103,7 @@ namespace Compiler {
 		AssignmentParser(Precedence prec)
 			: opPrec(prec) {}
 		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
+		virtual Precedence getPrec() { return opPrec; };
 		Precedence opPrec;
 	};
 
@@ -147,7 +152,7 @@ namespace Compiler {
 		// Instance of a scanner that will return tokens
 		Scanner _scanner;
 		// Get precedence of operator
-		int getPrecedence(Token tok);
+		int getPrecedence();
 		// Map of prefix parser chunks
 		std::map <TokenType, std::shared_ptr<IPrefixParser>> prefixMap = {};
 		// Map of infix parser chunks
