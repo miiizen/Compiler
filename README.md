@@ -1,5 +1,5 @@
 # Compiler
-Hopefully an eventually functional mini compiler for a made up language
+Hopefully this will be a small compiler for a turing complete language
 
 ## Docs
-I'll get around to writing some implementation details at some point, just so I don't for get everything I've learned.
+I need to write implementation details

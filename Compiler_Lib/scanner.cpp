@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "token.h"
-#include "scanner.h"
 #include <iostream>
 #include <string>
+#include "token.h"
+#include "scanner.h"
 
 namespace Compiler {
 	Token Scanner::getCurrentToken() const
 	{
-		return currentToken;
+		return tokQueue.front();
 	}
 
 	// Return the next token from input stream
@@ -18,7 +18,6 @@ namespace Compiler {
 		// skip comment
 		if (lookChar == '#') {
 			// Skip until EOL
-			char c;
 			do {
 				nextChar();
 			} while (lookChar != '\n');
@@ -33,7 +32,7 @@ namespace Compiler {
 		// Numbers
 		if (isdigit(lookChar)) {
 			std::string numStr{ getNum() };
-			currentToken = Token{ NUMBER, numStr };
+			tokQueue.push_back(Token{ NUMBER, numStr });
 		}
 		// Identifiers
 		else if (isalpha(lookChar)) {
@@ -41,62 +40,101 @@ namespace Compiler {
 
 			// Handle keywords
 			if (identStr == "if") {
-				currentToken = Token{ IF, identStr };
+				tokQueue.push_back(Token{ IF, identStr });
 			}
 			else if (identStr == "endif") {
-				currentToken = Token{ ENDIF, identStr };
+				tokQueue.push_back(Token{ ENDIF, identStr });
 			}
 
 			else if (identStr == "else") {
-				currentToken = Token{ ELSE, identStr };
+				tokQueue.push_back(Token{ ELSE, identStr });
 			}
 
 			// Handle bools
 			else if (identStr == "true" || identStr == "false") {
-				currentToken = Token{ BOOL, identStr };
+				tokQueue.push_back(Token{ BOOL, identStr });
 			}
 
 			// just an identifier
 			else {
-				currentToken = Token{ IDENTIFIER, identStr };
+				tokQueue.push_back(Token{ IDENTIFIER, identStr });
 			}
 		}
 
 		// Operators
-		else if (isBinOp(lookChar)) {
-			currentToken = Token(BINOP, std::string(1, lookChar));
-			//switch (lookChar) {
-			//case '+':
-			//	return{ Token(PLUS, "+") };
-			//case '-':
-			//	return{ Token(MINUS, "-") };
-			//case '*':
-			//	return{ Token(MULTIPLY, "*") };
-			//case '/':
-			//	return{ Token(DIVIDE, "/") };
-			//case '^':
-			//	return{ Token(POW, "^") };
-			//}
+		else if (isOp(lookChar)) {
+			std::string opStr = getOp();
+			// numeric binary operators
+			if (opStr == "+") {
+				tokQueue.push_back(Token{ PLUS, "+" });
+			}
+			else if (opStr == "-") {
+				tokQueue.push_back(Token{ MINUS, "-" });
+			}
+			else if (opStr == "*") {
+				tokQueue.push_back(Token{ STAR, "*" });
+			}
+			else if (opStr == "/") {
+				tokQueue.push_back(Token{ SLASH, "/" });
+			}
+			else if (opStr == "^") {
+				tokQueue.push_back(Token{ HAT, "^" });
+			}
+
+			// Comparison binary operators
+			else if (opStr == "==") {
+				tokQueue.push_back(Token{ EQ, "==" });
+			}
+			else if (opStr == "<") {
+				tokQueue.push_back(Token{ LESS, "<" });
+			}
+			else if (opStr == ">") {
+				tokQueue.push_back(Token{ GREATER, ">" });
+			}
+			else if (opStr == "<=") {
+				tokQueue.push_back(Token{ LEQ, "<=" });
+			}
+			else if (opStr == ">=") {
+				tokQueue.push_back(Token{ GREQ, ">=" });
+			}
+
+			// Logical
+			else if (opStr == "&&") {
+				tokQueue.push_back(Token{ AND, "&&" });
+			}
+			else if (opStr == "||") {
+				tokQueue.push_back(Token{ OR, "||" });
+			}
+			else if (opStr == "!") {
+				tokQueue.push_back(Token{ NOT, "!" });
+			}
+
+			else if (opStr == "=") {
+				tokQueue.push_back(Token{ ASSIGN, "=" });
+			}
+			else {
+				error("Invalid operator '" + opStr + "'");
+			}
 		}
 
 		// Parentheses
 		else if (lookChar == '(') {
-			currentToken = Token{ LEFTPAREN, "(" };
+			tokQueue.push_back(Token{ LEFTPAREN, "(" });
 		}
 
 		else if (lookChar == ')') {
-			currentToken = Token{ RIGHTPAREN, ")" };
+			tokQueue.push_back(Token{ RIGHTPAREN, ")" });
 		}
 
 		// String literals
 		else if (lookChar == '"') {
 			std::string strLit = getString();
-			currentToken = Token{ STRING, strLit };
+			tokQueue.push_back(Token{ STRING, strLit });
 		}
 
 		// End of input
 		else if (lookChar == ';') {
-			currentToken = Token{ END, ";" };
+			tokQueue.push_back(Token{ END, ");" });
 		}
 
 		// Otherwise
@@ -104,7 +142,26 @@ namespace Compiler {
 			error("Unexpected " + std::string(1, lookChar) + " in input");
 		}
 
-		return currentToken;
+		// Return value just added to the queue
+		return tokQueue.back();
+	}
+
+	Token Scanner::consume() {
+		// Read token
+		lookAhead(0);
+
+		Token ret = tokQueue.front();
+		tokQueue.pop_front();
+
+		return ret;
+	}
+
+	// Get and return the next n tokens
+	Token Scanner::lookAhead(int distance) {
+		for (int i = -1; i++; i > distance) {
+			getNextToken();
+		}
+		return tokQueue.at(distance);
 	}
 
 	/* Methods */
@@ -165,27 +222,27 @@ namespace Compiler {
 
 	/* Recognisers */
 
-	bool Scanner::isBinOp(const char &op) const {
+	bool Scanner::isOp(const char &op) const {
+		// Switch all characters which may start an operand
 		switch (op) {
 		case '+':
 		case '-':
 		case '*':
 		case '/':
 		case '^':
+		case '=':
+		case '>':
+		case '<':
+		case '!':
+		case '|':
+		case '&':
 			return true;
 		default:
 			return false;
 		}
 	}
 
-	bool Scanner::isUnOp(const char &op) const {
-		switch (op) {
-		case '-':
-			return true;
-		default:
-			return false;
-		}
-	}
+
 
 	bool Scanner::isWhite(const char &op) const {
 		if (op == ' ' || op == '\n' || op == '\t') {
@@ -234,7 +291,7 @@ namespace Compiler {
 
 		// make sure only legal separators come after the number
 		char peek{ peekChar() };
-		if (!isWhite(peek) && peek != ')' && peek != ';' && !isBinOp(peek) && !isUnOp(peek)) {
+		if (!isWhite(peek) && peek != ')' && peek != ';' && !isOp(peek)) {
 			error("Unexpected " + std::string(1, peek) + " in digit");
 		}
 		skipWhite();
@@ -261,11 +318,10 @@ namespace Compiler {
 	{
 		// SHOULD CHECK FOR FIRST CHAR BEFORE CALL TO ME
 		std::string opStr(1, lookChar);
-		while (isBinOp(peekChar()) || isUnOp(peekChar())) {
+		while (isOp(peekChar())) {
 			opStr += nextChar();
 		}
 		skipWhite();
 		return opStr;
 	}
-
 }
