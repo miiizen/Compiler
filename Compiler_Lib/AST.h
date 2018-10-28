@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "token.h"
 
 namespace Compiler {
@@ -37,6 +38,16 @@ namespace Compiler {
 	public:
 		AssignmentAST(std::string name, std::unique_ptr<AST> rhs)
 			: name(name), rhs(std::move(rhs)) {}
+	};
+
+	// Represents a function call
+	class FuncCallAST : public AST {
+		std::unique_ptr<AST> name;
+		std::vector<std::shared_ptr<AST>> args;
+
+	public:
+		FuncCallAST(std::unique_ptr<AST> name, std::vector<std::shared_ptr<AST>> args)
+			: name(std::move(name)), args(std::move(args)) {}
 	};
 
 	// Represents binary operators.  Can have 2 children

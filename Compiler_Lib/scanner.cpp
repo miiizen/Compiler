@@ -79,6 +79,12 @@ namespace Compiler {
 			}
 			else if (opStr == "^") {
 				tokQueue.push_back(Token{ HAT, "^" });
+			} 
+			else if (opStr == "++") {
+				tokQueue.push_back(Token{ INC, "++" });
+			}
+			else if (opStr == "--") {
+				tokQueue.push_back(Token{ DEC, "--" });
 			}
 
 			// Comparison binary operators
@@ -124,6 +130,10 @@ namespace Compiler {
 
 		else if (lookChar == ')') {
 			tokQueue.push_back(Token{ RIGHTPAREN, ")" });
+		}
+
+		else if (lookChar == ',') {
+			tokQueue.push_back(Token{ COMMA, "," });
 		}
 
 		// String literals
@@ -291,7 +301,7 @@ namespace Compiler {
 
 		// make sure only legal separators come after the number
 		char peek{ peekChar() };
-		if (!isWhite(peek) && peek != ')' && peek != ';' && !isOp(peek)) {
+		if (!isWhite(peek) && peek != ')' && peek != ',' && peek != ';' && !isOp(peek)) {
 			error("Unexpected " + std::string(1, peek) + " in digit");
 		}
 		skipWhite();

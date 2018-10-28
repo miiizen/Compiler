@@ -55,6 +55,15 @@ namespace Compiler {
 		Precedence opPrec;
 	};
 
+	// Grouping for math expressions
+	class GroupParser : public IPrefixParser {
+	public:
+		GroupParser(Precedence prec)
+			: opPrec(prec) {}
+		virtual std::unique_ptr<AST> parse(Parser* parser, const Token& tok);
+		Precedence opPrec;
+	};
+
 	// Interface for infix operator
 	class IInfixParser {
 	public:
@@ -107,6 +116,17 @@ namespace Compiler {
 		Precedence opPrec;
 	};
 
+	class CallParser : public IInfixParser {
+	public:
+		CallParser(Precedence prec)
+			: opPrec(prec) {}
+		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
+		virtual Precedence getPrec() { return opPrec; };
+		Precedence opPrec;
+	};
+
+	
+
 
 	/*		PARSER MAIN		*/
 	// Takes series of tokens and attempts to parse them
@@ -135,6 +155,12 @@ namespace Compiler {
 
 		// Register right assoc binary op
 		void infixRight(TokenType tok, Precedence prec);
+
+		// match a token
+		bool match(TokenType tok);
+
+		// Expect a token
+		Token expect(TokenType tok);
 
 		// Start recursive descent parsing
 		std::unique_ptr<AST> parse();

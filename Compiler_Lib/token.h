@@ -9,12 +9,12 @@ namespace Compiler {
 	// Enum representing different types of token
 	enum TokenType {
 		// Operators
-		PLUS, MINUS, STAR, SLASH, HAT,
+		PLUS, MINUS, STAR, SLASH, HAT, INC, DEC,
 		EQ, LESS, GREATER, LEQ, GREQ,
 		AND, OR, NOT,
 		ASSIGN, CONDITIONAL,
 
-		LEFTPAREN, RIGHTPAREN,
+		LEFTPAREN, RIGHTPAREN, COMMA,
 		NUMBER, STRING, IDENTIFIER, BOOL,
 		IF, ENDIF, ELSE,
 		NEWLINE, END

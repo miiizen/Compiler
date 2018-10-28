@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include <string>
+#include <vector>
 #include "parser.h"
 #include "token.h"
 #include "AST.h"
@@ -32,6 +33,14 @@ namespace Compiler {
 		// Return prefix.unary op AST node
 		std::unique_ptr<PrefixOpAST> op = std::make_unique<PrefixOpAST>(tok.getType(), std::move(operand));
 		return op;
+	}
+
+	/*		Group Parser		*/
+	std::unique_ptr<AST> GroupParser::parse(Parser * parser, const Token & tok)
+	{
+		std::unique_ptr<AST> expr = parser->parseExpression(0);
+		parser->expect(RIGHTPAREN);
+		return expr;
 	}
 
 	/*		Binary operator		*/
@@ -84,6 +93,22 @@ namespace Compiler {
 		return expr;
 	}
 
+	/*		Function call		*/
+	std::unique_ptr<AST> CallParser::parse(Parser * parser, std::unique_ptr<AST> left, const Token & tok)
+	{
+		// Parse comma separated values until )
+		std::vector<std::shared_ptr<AST>> args = {};
+
+		if (!parser->match(RIGHTPAREN)) {
+			do {
+				args.push_back(parser->parseExpression(0));
+			} while (parser->match(COMMA));
+			parser->expect(RIGHTPAREN);
+		}
+
+		return std::make_unique<FuncCallAST>(std::move(left), std::move(args));
+	}
+
 
 	/*		PARSER MAIN		*/
 
@@ -126,6 +151,27 @@ namespace Compiler {
 	{
 		std::unique_ptr<BinaryOperatorParser> in = std::make_unique<BinaryOperatorParser>(prec, true);
 		registerInfixTok(tok, std::move(in));
+	}
+
+	bool Parser::match(TokenType tok)
+	{
+		Token look = _scanner.lookAhead(0);
+		if (look.getType() != tok) {
+			return false;
+		}
+		_scanner.consume();
+		return true;
+	}
+
+	// Expect token + consume
+	Token Parser::expect(TokenType tok)
+	{
+		Token look = _scanner.lookAhead(0);
+		if (look.getType() != tok) {
+			error("Expected " + tok);
+		}
+
+		return _scanner.consume();
 	}
 
 	// Parse an expression
