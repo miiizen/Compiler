@@ -65,7 +65,8 @@ namespace Compiler {
 	std::unique_ptr<AST> TernaryOperatorParser::parse(Parser * parser, std::unique_ptr<AST> left, const Token & tok)
 	{
 		std::unique_ptr<AST> thenArm = parser->parseExpression(0);
-		// TODO match ':'
+		// match ':'
+		parser->expect(COLON);
 		std::unique_ptr<AST> elseArm = parser->parseExpression(Precedence::TERNARY - 1);
 
 		// left ? thenArm : elseArm

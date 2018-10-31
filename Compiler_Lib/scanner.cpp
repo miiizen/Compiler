@@ -103,6 +103,9 @@ namespace Compiler {
 			else if (opStr == ">=") {
 				tokQueue.push_back(Token{ GREQ, ">=" });
 			}
+			else if (opStr == "!=") {
+				tokQueue.push_back(Token{ NEQ, "!=" });
+			}
 
 			// Logical
 			else if (opStr == "&&") {
@@ -140,6 +143,14 @@ namespace Compiler {
 		else if (lookChar == '"') {
 			std::string strLit = getString();
 			tokQueue.push_back(Token{ STRING, strLit });
+		}
+
+		else if (lookChar == '?') {
+			tokQueue.push_back(Token{ CONDITIONAL, "?" });
+		}
+
+		else if (lookChar == ':') {
+			tokQueue.push_back(Token{ COLON, ":" });
 		}
 
 		// End of input

@@ -14,14 +14,17 @@ namespace Compiler {
 
 	// Map of operator precedences
 	enum Precedence {
-		ASSIGNMENT = 1,
-		TERNARY,
-		SUM,
-		PRODUCT,
-		EXPONENT,
-		PREFIX,
-		POSTFIX,
-		CALL,
+		
+		ASSIGNMENT = 1,	// =
+		TERNARY,		// ? :
+		LOGICAL,		// || && (right associative)
+		RELATIONAL,		// == >= <= !=
+		SUM,			// + -
+		PRODUCT,		// * /
+		EXPONENT,		// ^
+		PREFIX,			// - ! (
+		POSTFIX,		// ++ --
+		CALL,			// ( 
 	};
 
 	/*		PARSER MODULES		*/
