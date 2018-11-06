@@ -187,6 +187,8 @@ namespace Compiler {
 		// PArse an if statement
 		std::unique_ptr<AST> ifStmt();
 
+		std::unique_ptr<AST> forStmt();
+
 		// Math expression - TDOP
 		std::unique_ptr<AST> parseExpression(int precedence);
 

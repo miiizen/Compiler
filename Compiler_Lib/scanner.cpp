@@ -48,9 +48,18 @@ namespace Compiler {
 			else if (identStr == "ENDIF") {
 				tokQueue.push_back(Token{ ENDIF, identStr });
 			}
-
 			else if (identStr == "ELSE") {
 				tokQueue.push_back(Token{ ELSE, identStr });
+			}
+
+			else if (identStr == "FOR") {
+				tokQueue.push_back(Token{ FOR, identStr });
+			}
+			else if (identStr == "IN") {
+				tokQueue.push_back(Token{ IN, identStr });
+			}
+			else if (identStr == "ENDFOR") {
+				tokQueue.push_back(Token{ ENDFOR, identStr });
 			}
 
 			// Handle bools

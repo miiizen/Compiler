@@ -122,6 +122,20 @@ namespace Compiler {
 		IfAST(std::unique_ptr<AST> condition, std::unique_ptr<AST> thenBlock, std::unique_ptr<AST> elseBlock)
 			: condition(std::move(condition)), thenBlock(std::move(thenBlock)), elseBlock(std::move(elseBlock)) {}
 	};
+
+	class ForAST : public AST {
+		// Should this be an AST class?
+		std::string varName;
+		std::unique_ptr<AST> start, end, step, body;
+
+	public:
+		ForAST(const std::string &varName, std::unique_ptr<AST> start,
+			std::unique_ptr<AST> end,
+			std::unique_ptr<AST> step,
+			std::unique_ptr<AST> body)
+			: varName(varName), start(std::move(start)), end(std::move(end)),
+			step(std::move(step)), body(std::move(body)) {}
+	};
 }
 
 #endif

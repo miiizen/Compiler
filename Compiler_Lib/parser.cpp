@@ -248,11 +248,14 @@ namespace Compiler {
 	{
 		std::vector<std::shared_ptr<AST>> stmts = {};
 
-		while ((_scanner.lookAhead(0).getType() != END) && (_scanner.lookAhead(0).getType() != ELSE) && (_scanner.lookAhead(0).getType() != ENDIF)) {
+		while ((_scanner.lookAhead(0).getType() != END) && (_scanner.lookAhead(0).getType() != ELSE) && (_scanner.lookAhead(0).getType() != ENDIF) && (_scanner.lookAhead(0).getType() != ENDFOR)) {
 			Token tok = _scanner.getCurrentToken();
 			switch (tok.getType()) {
 			case IF:
 				stmts.push_back(ifStmt());
+				break;
+			case FOR:
+				stmts.push_back(forStmt());
 				break;
 			default:
 				stmts.push_back(parseExpression(0));
@@ -270,6 +273,9 @@ namespace Compiler {
 
 		// get conditional expression
 		std::unique_ptr<AST> cond = parseExpression(0);
+		if (!cond) {
+			error("A conditional expression is required.");
+		}
 		expect(THEN);
 
 		// parse block
@@ -289,6 +295,57 @@ namespace Compiler {
 		std::unique_ptr<IfAST> ifst = std::make_unique<IfAST>(std::move(cond), std::move(thenBlock), std::move(elseBlock));
 
 		return ifst;
+	}
+
+	std::unique_ptr<AST> Parser::forStmt()
+	{
+		// expect for
+		expect(FOR);
+
+		// Get identifier
+		std::string ident = expect(IDENTIFIER).getValue();
+
+		// Expect = 
+		expect(ASSIGN);
+
+		// Parse expression
+		// TODO error checking perhaps?
+		std::unique_ptr<AST> start = parseExpression(0);
+		if (!start) {
+			error("There should be a start expression");
+		}
+
+		// expect comma
+		expect(COMMA);
+
+		// Parse expression for end value
+		std::unique_ptr<AST> end = parseExpression(0);
+		if (!end) {
+			error("There should be an end expression");
+		}
+
+		// Optional step value.
+		std::unique_ptr<AST> step;
+		if (_scanner.lookAhead(0).getType() == COMMA) {
+			expect(COMMA);
+			step = parseExpression(0);
+			// TODO error checking perhaps?
+			if (!step) {
+				error("There should be a step!");
+			}
+		}
+
+		// Expect in
+		expect(IN);
+
+		std::unique_ptr<AST> body = block();
+		if (!body) {
+			error("There should be a body!");
+		}
+
+		expect(ENDFOR);
+
+		return std::make_unique<ForAST>(ident, std::move(start), std::move(end), std::move(step), std::move(body));
 	}
 
 	// Get the precedence for a given token
