@@ -39,20 +39,31 @@ namespace Compiler {
 			std::string identStr{ getName() };
 
 			// Handle keywords
-			if (identStr == "if") {
+			if (identStr == "IF") {
 				tokQueue.push_back(Token{ IF, identStr });
 			}
-			else if (identStr == "endif") {
+			else if (identStr == "THEN") {
+				tokQueue.push_back(Token{ THEN, identStr });
+			}
+			else if (identStr == "ENDIF") {
 				tokQueue.push_back(Token{ ENDIF, identStr });
 			}
 
-			else if (identStr == "else") {
+			else if (identStr == "ELSE") {
 				tokQueue.push_back(Token{ ELSE, identStr });
 			}
 
 			// Handle bools
 			else if (identStr == "true" || identStr == "false") {
 				tokQueue.push_back(Token{ BOOL, identStr });
+			}
+
+			else if (identStr == "BEGIN") {
+				tokQueue.push_back(Token{ BEGIN, identStr });
+			}
+			
+			else if (identStr == "END") {
+				tokQueue.push_back(Token{ END, identStr });
 			}
 
 			// just an identifier
@@ -76,6 +87,9 @@ namespace Compiler {
 			}
 			else if (opStr == "/") {
 				tokQueue.push_back(Token{ SLASH, "/" });
+			}
+			else if (opStr == "%") {
+				tokQueue.push_back(Token{ MOD, "%" });
 			}
 			else if (opStr == "^") {
 				tokQueue.push_back(Token{ HAT, "^" });
@@ -251,6 +265,7 @@ namespace Compiler {
 		case '*':
 		case '/':
 		case '^':
+		case '%':
 		case '=':
 		case '>':
 		case '<':

@@ -77,6 +77,7 @@ namespace Compiler {
 	}
 
 	/*		Assignment operator		*/
+	// TODO NEEDS FINISHING NOT FINISHED FINISH ME PLEASE!!!
 	std::unique_ptr<AST> AssignmentParser::parse(Parser * parser, std::unique_ptr<AST> left, const Token & tok)
 	{
 		// Get rhs of expression
@@ -87,9 +88,8 @@ namespace Compiler {
 		if (var == nullptr) {
 			parser->error("The left hand side of an assignment must be a name.");
 		}
-		// access name and create assignment ast
-		std::string name = var->name;
-		std::unique_ptr<AssignmentAST> expr = std::make_unique<AssignmentAST>(name, std::move(right));
+
+		std::unique_ptr<AssignmentAST> expr = std::make_unique<AssignmentAST>(std::move(left), std::move(right));
 
 		return expr;
 	}
@@ -108,6 +108,27 @@ namespace Compiler {
 		}
 
 		return std::make_unique<FuncCallAST>(std::move(left), std::move(args));
+	}
+
+	/*		Access array index		*/
+	std::unique_ptr<AST> Compiler::IndexParser::parse(Parser * parser, std::unique_ptr<AST> left, const Token & tok)
+	{
+		std::unique_ptr<AST> right = parser->parseExpression(Precedence::CALL - 1);
+
+		// Check if lhs is of type name
+		NameAST* lhs = dynamic_cast<NameAST*>(left.get());
+		if (lhs == nullptr) {
+			parser->error("The left hand side must be a name.");
+		}
+
+		// Check if rhs is of type number
+		NumberAST* rhs = dynamic_cast<NumberAST*>(right.get());
+		if (rhs == nullptr) {
+			parser->error("The left hand side must be a number.");
+		}
+
+		//TODO FINISH ME PLEASE
+		return nullptr;
 	}
 
 
@@ -209,7 +230,65 @@ namespace Compiler {
 
 	std::unique_ptr<AST> Parser::parse()
 	{
-		return parseExpression(0);
+		return program();
+	}
+
+	std::unique_ptr<AST> Parser::program()
+	{
+		// Parse an entire program
+		
+		expect(BEGIN);
+		std::unique_ptr<AST> tree = block();
+		expect(END);
+
+		return tree;
+	}
+
+	std::unique_ptr<AST> Parser::block()
+	{
+		std::vector<std::shared_ptr<AST>> stmts = {};
+
+		while ((_scanner.lookAhead(0).getType() != END) && (_scanner.lookAhead(0).getType() != ELSE) && (_scanner.lookAhead(0).getType() != ENDIF)) {
+			Token tok = _scanner.getCurrentToken();
+			switch (tok.getType()) {
+			case IF:
+				stmts.push_back(ifStmt());
+				break;
+			default:
+				stmts.push_back(parseExpression(0));
+			}
+		}
+
+		std::unique_ptr<AST> blk = std::make_unique<BlockAST>(std::move(stmts));
+		return blk;
+	}
+
+	std::unique_ptr<AST> Parser::ifStmt()
+	{
+		// expect IF
+		expect(IF);
+
+		// get conditional expression
+		std::unique_ptr<AST> cond = parseExpression(0);
+		expect(THEN);
+
+		// parse block
+		// decl else for ahead
+		std::unique_ptr<AST> elseBlock;
+		std::unique_ptr<AST> thenBlock = block();
+
+		// Check for else
+		if (_scanner.lookAhead(0).getType() == ELSE) {
+			expect(ELSE);
+			// parse block
+			elseBlock = block();
+		}
+
+		match(ENDIF);
+
+		std::unique_ptr<IfAST> ifst = std::make_unique<IfAST>(std::move(cond), std::move(thenBlock), std::move(elseBlock));
+
+		return ifst;
 	}
 
 	// Get the precedence for a given token

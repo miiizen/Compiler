@@ -24,7 +24,7 @@ namespace Compiler {
 		EXPONENT,		// ^
 		PREFIX,			// - ! (
 		POSTFIX,		// ++ --
-		CALL,			// ( 
+		CALL,			// ( [
 	};
 
 	/*		PARSER MODULES		*/
@@ -128,6 +128,16 @@ namespace Compiler {
 		Precedence opPrec;
 	};
 
+	// Array indexing
+	class IndexParser : public IInfixParser {
+	public:
+		IndexParser(Precedence prec)
+			: opPrec(prec) {}
+		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
+		virtual Precedence getPrec() { return opPrec; };
+		Precedence opPrec;
+	};
+
 	
 
 
@@ -167,6 +177,15 @@ namespace Compiler {
 
 		// Start recursive descent parsing
 		std::unique_ptr<AST> parse();
+
+		// Parse a program
+		std::unique_ptr<AST> program();
+
+		// Parse a statement block
+		std::unique_ptr<AST> block();
+
+		// PArse an if statement
+		std::unique_ptr<AST> ifStmt();
 
 		// Math expression - TDOP
 		std::unique_ptr<AST> parseExpression(int precedence);
