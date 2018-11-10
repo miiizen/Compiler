@@ -34,7 +34,7 @@ namespace Compiler {
 		// Parse operand
 		unique_ptr<AST> operand = parser->parseExpression(this->opPrec);
 		// Return prefix.unary op AST node
-		unique_ptr<PrefixOpAST> op = std::make_unique<PrefixOpAST>(tok.getType(), std::move(operand));
+		unique_ptr<UnaryOpAST> op = std::make_unique<UnaryOpAST>(tok.getType(), std::move(operand));
 		return op;
 	}
 
@@ -60,7 +60,7 @@ namespace Compiler {
 	unique_ptr<AST> PostfixOperatorParser::parse(Parser * parser, unique_ptr<AST> left, const Token & tok)
 	{
 		// Wrap operand in expression
-		unique_ptr<PostfixOpAST> expr = std::make_unique<PostfixOpAST>(tok.getType(), std::move(left));
+		unique_ptr<UnaryOpAST> expr = std::make_unique<UnaryOpAST>(tok.getType(), std::move(left));
 		return expr;
 	}
 

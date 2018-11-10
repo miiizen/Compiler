@@ -112,27 +112,14 @@ namespace Compiler {
 		virtual ASTType getType() { return type; };
 	};
 
-	// Represents a unary prefix operator
-	class PrefixOpAST : public AST {
+	// Represents a unary operator
+	class UnaryOpAST : public AST {
 		ASTType type = ASTType::PREFIXOP;
 		TokenType op;
 		std::unique_ptr<AST> operand;
 
 	public:
-		PrefixOpAST(TokenType op, std::unique_ptr<AST> operand)
-			: op(op), operand(std::move(operand)) {}
-		virtual ASTType getType() { return type; };
-	};
-
-	// Represents a unary postfix operator
-	// TODO Can we merge both unary operators? they are basically the same ast wise
-	class PostfixOpAST : public AST {
-		ASTType type = ASTType::POSTFIXOP;
-		TokenType op;
-		std::unique_ptr<AST> operand;
-
-	public:
-		PostfixOpAST(TokenType op, std::unique_ptr<AST> operand)
+		UnaryOpAST(TokenType op, std::unique_ptr<AST> operand)
 			: op(op), operand(std::move(operand)) {}
 		virtual ASTType getType() { return type; };
 	};
