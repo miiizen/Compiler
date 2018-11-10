@@ -184,13 +184,14 @@ namespace Compiler {
 		// Parse a statement block
 		std::unique_ptr<AST> block();
 
-		// PArse an if statement
+		// Parse an if statement
 		std::unique_ptr<AST> ifStmt();
 
+		// Parse a for statement
 		std::unique_ptr<AST> forStmt();
 
 		// Math expression - TDOP
-		std::unique_ptr<AST> parseExpression(int precedence);
+		std::unique_ptr<AST> parseExpression(int precedence = 0);
 
 		// Return an error
 		// TODO hide this.  make parselets friends?
