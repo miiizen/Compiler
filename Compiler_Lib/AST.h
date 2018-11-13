@@ -24,8 +24,7 @@ namespace Compiler {
 		ASSIGNMENT,
 		FUNCCALL,
 		BINARYOP,
-		PREFIXOP,
-		POSTFIXOP,
+		UNARY,
 		TERNARYOP,
 		IF,
 		FOR
