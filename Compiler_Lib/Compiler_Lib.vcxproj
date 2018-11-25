@@ -149,13 +149,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AST.h" />
+    <ClInclude Include="interpreter.h" />
     <ClInclude Include="parser.h" />
     <ClInclude Include="scanner.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="token.h" />
+    <ClInclude Include="visitor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="interpreter.cpp" />
     <ClCompile Include="parser.cpp" />
     <ClCompile Include="scanner.cpp" />
     <ClCompile Include="stdafx.cpp">
