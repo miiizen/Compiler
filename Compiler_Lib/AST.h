@@ -9,6 +9,9 @@
 
 namespace Compiler {
 
+	class Visitor;
+	using std::unique_ptr;
+
 	// Data types available in the language
 	/*enum DataType {
 		NUMERIC,
@@ -37,7 +40,7 @@ namespace Compiler {
 		virtual ~AST() = default;
 		virtual const ASTType getType() = 0;
 		// Hook into visitor class
-		virtual void accept(Visitor &v) = 0;
+		virtual void accept(Visitor *v) = 0;
 	};
 
 	// Represents a block with an arbitrary number of children
@@ -51,7 +54,7 @@ namespace Compiler {
 		std::vector<std::shared_ptr<AST>> getChildren() { return children; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<BlockAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	// Represents numeric literals.  Everything is a double at the moment??????
@@ -64,7 +67,7 @@ namespace Compiler {
 		const double getVal() { return val; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<NumberAST>(this)); };
+		virtual void accept(Visitor *v);
 
 	};
 
@@ -78,7 +81,7 @@ namespace Compiler {
 		const std::string getName() { return name; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<NameAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	// Compound type
@@ -93,7 +96,7 @@ namespace Compiler {
 		std::vector<std::shared_ptr<AST>> values;
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<ArrayAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	// Represents an assignment expression
@@ -106,7 +109,7 @@ namespace Compiler {
 		virtual const ASTType getType() { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<AssignmentAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	// Represents a function call
@@ -120,7 +123,7 @@ namespace Compiler {
 		virtual const ASTType getType() { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<FuncCallAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	// Represents binary operators.  Can have 2 children
@@ -135,7 +138,7 @@ namespace Compiler {
 		virtual const ASTType getType() { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<BinaryOpAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	// Represents a unary operator
@@ -150,7 +153,7 @@ namespace Compiler {
 		virtual const ASTType getType() { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<UnaryOpAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	// Represents a ternary operator
@@ -164,7 +167,7 @@ namespace Compiler {
 		virtual const ASTType getType() { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<TernaryOpAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	// If/else statement
@@ -178,7 +181,7 @@ namespace Compiler {
 		virtual const ASTType getType() { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<IfAST>(this)); };
+		virtual void accept(Visitor *v);
 	};
 
 	class ForAST : public AST {
@@ -197,7 +200,26 @@ namespace Compiler {
 		virtual const ASTType getType() { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor &v) { v.visit(unique_ptr<ForAST>(this)); };
+		virtual void accept(Visitor *v);
+	};
+
+
+	/* AST visitor */
+
+	// Interface for other visitor classes to inherit from (interpreter, compiler)
+	class Visitor {
+	public:
+		virtual void visit(unique_ptr<BlockAST> node) = 0;
+		virtual void visit(unique_ptr<NumberAST> node) = 0;
+		virtual void visit(unique_ptr<NameAST> node) = 0;
+		virtual void visit(unique_ptr<ArrayAST> node) = 0;
+		virtual void visit(unique_ptr<AssignmentAST> node) = 0;
+		virtual void visit(unique_ptr<FuncCallAST> node) = 0;
+		virtual void visit(unique_ptr<BinaryOpAST> node) = 0;
+		virtual void visit(unique_ptr<UnaryOpAST> node) = 0;
+		virtual void visit(unique_ptr<TernaryOpAST> node) = 0;
+		virtual void visit(unique_ptr<IfAST> node) = 0;
+		virtual void visit(unique_ptr<ForAST> node) = 0;
 	};
 }
 
