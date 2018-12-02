@@ -1,3 +1,5 @@
+#include <utility>
+
 #pragma once
 #ifndef __TOKEN_H
 #define __TOKEN_H
@@ -26,9 +28,9 @@ namespace Compiler {
 	public:
 		// Constructors
 		Token()
-		{ }
+		= default;
 		Token(TokenType tokenType, std::string value)
-			: _tokType{ tokenType }, _value{ value }
+			: _tokType{ tokenType }, _value{std::move( value )}
 		{ }
 
 		// Return token type
@@ -51,6 +53,6 @@ namespace Compiler {
 		friend bool operator==(const Token& lhs, const Token& rhs);
 
 	};
-}
+}  // namespace Compiler
 
 #endif  // __TOKEN_H

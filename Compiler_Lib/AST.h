@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 #include "token.h"
 
@@ -50,11 +51,11 @@ namespace Compiler {
 	public:
 		BlockAST(std::vector<std::shared_ptr<AST>> children)
 			: children(std::move(children)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 		std::vector<std::shared_ptr<AST>> getChildren() { return children; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	// Represents numeric literals.  Everything is a double at the moment??????
@@ -63,11 +64,11 @@ namespace Compiler {
 		double val;
 	public:
 		NumberAST(double val) : val(val) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 		const double getVal() { return val; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 
 	};
 
@@ -76,12 +77,12 @@ namespace Compiler {
 		ASTType type = ASTType::NAME;
 		std::string name;
 	public:
-		NameAST(const std::string &name) : name(name) {}
-		virtual const ASTType getType() { return type; };
+		NameAST(std::string name) : name(std::move(name)) {}
+		const ASTType getType() override { return type; };
 		const std::string getName() { return name; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	// Compound type
@@ -92,11 +93,11 @@ namespace Compiler {
 	public:
 		ArrayAST(std::unique_ptr<AST> name, std::vector<std::shared_ptr<AST>> vals)
 			: name(std::move(name)), values(std::move(vals)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 		std::vector<std::shared_ptr<AST>> values;
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	// Represents an assignment expression
@@ -106,10 +107,10 @@ namespace Compiler {
 	public:
 		AssignmentAST(std::unique_ptr<AST> name, std::unique_ptr<AST> rhs)
 			: name(std::move(name)), rhs(std::move(rhs)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	// Represents a function call
@@ -120,10 +121,10 @@ namespace Compiler {
 	public:
 		FuncCallAST(std::unique_ptr<AST> name, std::vector<std::shared_ptr<AST>> args)
 			: name(std::move(name)), args(std::move(args)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	// Represents binary operators.  Can have 2 children
@@ -135,10 +136,10 @@ namespace Compiler {
 	public:
 		BinaryOpAST(TokenType op, std::unique_ptr<AST> lhs, std::unique_ptr<AST> rhs)
 			: op(op), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	// Represents a unary operator
@@ -150,10 +151,10 @@ namespace Compiler {
 	public:
 		UnaryOpAST(TokenType op, std::unique_ptr<AST> operand)
 			: op(op), operand(std::move(operand)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	// Represents a ternary operator
@@ -164,10 +165,10 @@ namespace Compiler {
 		TernaryOpAST(std::unique_ptr<AST> condition, std::unique_ptr<AST> thenArm, std::unique_ptr<AST> elseArm)
 			: condition(std::move(condition)), thenArm(std::move(thenArm)), 
 			  elseArm(std::move(elseArm)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	// If/else statement
@@ -178,10 +179,10 @@ namespace Compiler {
 		IfAST(std::unique_ptr<AST> condition, std::unique_ptr<AST> thenBlock, std::unique_ptr<AST> elseBlock)
 			: condition(std::move(condition)), thenBlock(std::move(thenBlock)), 
 			  elseBlock(std::move(elseBlock)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 	class ForAST : public AST {
@@ -191,16 +192,16 @@ namespace Compiler {
 		std::unique_ptr<AST> start, end, step, body;
 
 	public:
-		ForAST(const std::string &varName, std::unique_ptr<AST> start,
+		ForAST(std::string varName, std::unique_ptr<AST> start,
 			std::unique_ptr<AST> end,
 			std::unique_ptr<AST> step,
 			std::unique_ptr<AST> body)
-			: varName(varName), start(std::move(start)), end(std::move(end)),
+			: varName(std::move(varName)), start(std::move(start)), end(std::move(end)),
 			step(std::move(step)), body(std::move(body)) {}
-		virtual const ASTType getType() { return type; };
+		const ASTType getType() override { return type; };
 
 		// Visitor hook
-		virtual void accept(Visitor *v);
+		void accept(Visitor *v) override;
 	};
 
 
@@ -221,6 +222,6 @@ namespace Compiler {
 		virtual void visit(unique_ptr<IfAST> node) = 0;
 		virtual void visit(unique_ptr<ForAST> node) = 0;
 	};
-}
+}  // namespace Compiler
 
 #endif

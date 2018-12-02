@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <utility>
 #include "token.h"
 #include "scanner.h"
 #include "AST.h"
@@ -40,13 +41,13 @@ namespace Compiler {
 	// Class for numbers
 	class NumberParser : public IPrefixParser {
 	public:
-		virtual std::unique_ptr<AST> parse(Parser* parser, const Token& tok);
+		std::unique_ptr<AST> parse(Parser* parser, const Token& tok) override;
 	};
 
 	// Class for variables
 	class NameParser : public IPrefixParser {
 	public:
-		virtual std::unique_ptr<AST> parse(Parser* parser, const Token& tok);
+		std::unique_ptr<AST> parse(Parser* parser, const Token& tok) override;
 	};
 
 	// Class for prefix operators
@@ -54,7 +55,7 @@ namespace Compiler {
 	public:
 		PrefixOperatorParser(Precedence prec)
 			: opPrec(prec) {}
-		virtual std::unique_ptr<AST> parse(Parser* parser, const Token& tok);
+		std::unique_ptr<AST> parse(Parser* parser, const Token& tok) override;
 		Precedence opPrec;
 	};
 
@@ -63,7 +64,7 @@ namespace Compiler {
 	public:
 		GroupParser(Precedence prec)
 			: opPrec(prec) {}
-		virtual std::unique_ptr<AST> parse(Parser* parser, const Token& tok);
+		std::unique_ptr<AST> parse(Parser* parser, const Token& tok) override;
 		Precedence opPrec;
 	};
 
@@ -83,8 +84,8 @@ namespace Compiler {
 	public:
 		BinaryOperatorParser(Precedence prec, bool right)
 			: opPrec(prec), isRight(right) {}
-		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
-		virtual Precedence getPrec() { return opPrec; };
+		std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok) override;
+		Precedence getPrec() override { return opPrec; };
 		Precedence opPrec;
 		bool isRight;
 	};
@@ -94,8 +95,8 @@ namespace Compiler {
 	public:
 		PostfixOperatorParser(Precedence prec)
 			: opPrec(prec) {}
-		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
-		virtual Precedence getPrec() { return opPrec; };
+		std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok) override;
+		Precedence getPrec() override { return opPrec; };
 		Precedence opPrec;
 	};
 
@@ -104,8 +105,8 @@ namespace Compiler {
 	public:
 		TernaryOperatorParser(Precedence prec)
 			: opPrec(prec) {}
-		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
-		virtual Precedence getPrec() { return opPrec; };
+		std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok) override;
+		Precedence getPrec() override { return opPrec; };
 		Precedence opPrec;
 	};
 
@@ -114,8 +115,8 @@ namespace Compiler {
 	public:
 		AssignmentParser(Precedence prec)
 			: opPrec(prec) {}
-		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
-		virtual Precedence getPrec() { return opPrec; };
+		std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok) override;
+		Precedence getPrec() override { return opPrec; };
 		Precedence opPrec;
 	};
 
@@ -123,8 +124,8 @@ namespace Compiler {
 	public:
 		CallParser(Precedence prec)
 			: opPrec(prec) {}
-		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
-		virtual Precedence getPrec() { return opPrec; };
+		std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok) override;
+		Precedence getPrec() override { return opPrec; };
 		Precedence opPrec;
 	};
 
@@ -133,8 +134,8 @@ namespace Compiler {
 	public:
 		IndexParser(Precedence prec)
 			: opPrec(prec) {}
-		virtual std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok);
-		virtual Precedence getPrec() { return opPrec; };
+		std::unique_ptr<AST> parse(Parser* parser, std::unique_ptr<AST> left, const Token& tok) override;
+		Precedence getPrec() override { return opPrec; };
 		Precedence opPrec;
 	};
 
@@ -147,7 +148,7 @@ namespace Compiler {
 	public:
 		// Constructor
 		Parser(std::string inp)
-			: _inp{ inp },				// Get input
+			: _inp{std::move( inp )},				// Get input
 			_scanner{ Scanner(_inp) }	// Initialize scanner
 		{ }
 
@@ -194,7 +195,7 @@ namespace Compiler {
 		std::unique_ptr<AST> parseExpression(int precedence = 0);
 
 		// Return an error
-		// TODO hide this.  make parselets friends?
+		// TODO(James): hide this.  make parselets friends?
 		void error(std::string message);
 
 	private:
@@ -209,5 +210,5 @@ namespace Compiler {
 		// Map of infix parser chunks
 		std::map <TokenType, std::shared_ptr<IInfixParser>> infixMap = {};
 	};
-}
+}  // namespace Compiler
 #endif

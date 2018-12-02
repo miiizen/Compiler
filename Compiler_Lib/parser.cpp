@@ -80,7 +80,7 @@ namespace Compiler {
 	}
 
 	/*		Assignment operator		*/
-	// TODO NEEDS FINISHING NOT FINISHED FINISH ME PLEASE!!!
+	// TODO(James): NEEDS FINISHING NOT FINISHED FINISH ME PLEASE!!!
 	unique_ptr<AST> AssignmentParser::parse(Parser * parser, unique_ptr<AST> left, const Token & tok)
 	{
 		// Get rhs of expression
@@ -127,7 +127,7 @@ namespace Compiler {
 			parser->error("The left hand side must be a number.");
 		}
 
-		//TODO FINISH ME PLEASE
+		// TODO(James): FINISH ME PLEASE
 		return nullptr;
 	}
 
@@ -309,7 +309,7 @@ namespace Compiler {
 		expect(ASSIGN);
 
 		// Parse expression
-		// TODO error checking perhaps?
+		// TODO(James): error checking perhaps?
 		unique_ptr<AST> start = parseExpression();
 		if (!start) {
 			error("There should be a start expression");
@@ -329,7 +329,7 @@ namespace Compiler {
 		if (_scanner.lookAhead(0).getType() == COMMA) {
 			expect(COMMA);
 			step = parseExpression();
-			// TODO error checking perhaps?
+			// TODO(James): error checking perhaps?
 			if (!step) {
 				error("There should be a step!");
 			}
@@ -357,9 +357,9 @@ namespace Compiler {
 			Precedence prec = op->getPrec();
 			return prec;
 		}
-		else {
+		
 			return 0;
-		}
+		
 	}
 
 	void Parser::error(std::string message)
@@ -368,4 +368,4 @@ namespace Compiler {
 		std::cerr << "Scanner: " << message << std::endl;
 	}
 
-}
+}  // namespace Compiler

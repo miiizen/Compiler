@@ -1,3 +1,5 @@
+#include <utility>
+
 #pragma once
 #ifndef __SCANNER_H
 #define __SCANNER_H
@@ -13,7 +15,7 @@ namespace Compiler {
 	public:
 		// Constructor
 		Scanner(std::string inp)
-			: _inp{ inp }
+			: _inp{std::move( inp )}
 		{ }
 		// Return the current token
 		Token getCurrentToken() const;
@@ -64,6 +66,6 @@ namespace Compiler {
 		std::string getOp();
 
 	};
-}
+}  // namespace Compiler
 
 #endif  // __SCANNER_H
