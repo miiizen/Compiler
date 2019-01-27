@@ -4,12 +4,13 @@
 namespace Compiler {
 	using std::unique_ptr;
 
-	//TODO implement
+	// TODO(James): implement
 
 	void Interpreter::visit(unique_ptr<BlockAST> node)
 	{
 		// iterate through list of children
 		//		do a visit on each child in list
+		//		depth first
 	}
 
 	void Interpreter::visit(unique_ptr<NumberAST> node)
@@ -63,4 +64,4 @@ namespace Compiler {
 	{
 		
 	}
-}
+}  // namespace Compiler

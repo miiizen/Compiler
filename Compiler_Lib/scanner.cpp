@@ -25,59 +25,59 @@ namespace Compiler {
 		}
 
 		// Eat whitespace
-		if (isspace(lookChar)) {
+		if (isspace(lookChar) != 0) {
 			nextChar();
 		}
 
 		// Numbers
-		if (isdigit(lookChar)) {
+		if (isdigit(lookChar) != 0) {
 			std::string numStr{ getNum() };
-			tokQueue.push_back(Token{ NUMBER, numStr });
+			tokQueue.emplace_back( NUMBER, numStr );
 		}
 		// Identifiers
-		else if (isalpha(lookChar)) {
+		else if (isalpha(lookChar) != 0) {
 			std::string identStr{ getName() };
 
 			// Handle keywords
 			if (identStr == "IF") {
-				tokQueue.push_back(Token{ IF, identStr });
+				tokQueue.emplace_back( IF, identStr );
 			}
 			else if (identStr == "THEN") {
-				tokQueue.push_back(Token{ THEN, identStr });
+				tokQueue.emplace_back( THEN, identStr );
 			}
 			else if (identStr == "ENDIF") {
-				tokQueue.push_back(Token{ ENDIF, identStr });
+				tokQueue.emplace_back( ENDIF, identStr );
 			}
 			else if (identStr == "ELSE") {
-				tokQueue.push_back(Token{ ELSE, identStr });
+				tokQueue.emplace_back( ELSE, identStr );
 			}
 
 			else if (identStr == "FOR") {
-				tokQueue.push_back(Token{ FOR, identStr });
+				tokQueue.emplace_back( FOR, identStr );
 			}
 			else if (identStr == "IN") {
-				tokQueue.push_back(Token{ IN, identStr });
+				tokQueue.emplace_back( IN, identStr );
 			}
 			else if (identStr == "ENDFOR") {
-				tokQueue.push_back(Token{ ENDFOR, identStr });
+				tokQueue.emplace_back( ENDFOR, identStr );
 			}
 
 			// Handle bools
 			else if (identStr == "true" || identStr == "false") {
-				tokQueue.push_back(Token{ BOOL, identStr });
+				tokQueue.emplace_back( BOOL, identStr );
 			}
 
 			else if (identStr == "BEGIN") {
-				tokQueue.push_back(Token{ BEGIN, identStr });
+				tokQueue.emplace_back( BEGIN, identStr );
 			}
 			
 			else if (identStr == "END") {
-				tokQueue.push_back(Token{ END, identStr });
+				tokQueue.emplace_back( END, identStr );
 			}
 
 			// just an identifier
 			else {
-				tokQueue.push_back(Token{ IDENTIFIER, identStr });
+				tokQueue.emplace_back( IDENTIFIER, identStr );
 			}
 		}
 
@@ -86,63 +86,63 @@ namespace Compiler {
 			std::string opStr = getOp();
 			// numeric binary operators
 			if (opStr == "+") {
-				tokQueue.push_back(Token{ PLUS, "+" });
+				tokQueue.emplace_back( PLUS, "+" );
 			}
 			else if (opStr == "-") {
-				tokQueue.push_back(Token{ MINUS, "-" });
+				tokQueue.emplace_back( MINUS, "-" );
 			}
 			else if (opStr == "*") {
-				tokQueue.push_back(Token{ STAR, "*" });
+				tokQueue.emplace_back( STAR, "*" );
 			}
 			else if (opStr == "/") {
-				tokQueue.push_back(Token{ SLASH, "/" });
+				tokQueue.emplace_back( SLASH, "/" );
 			}
 			else if (opStr == "%") {
-				tokQueue.push_back(Token{ MOD, "%" });
+				tokQueue.emplace_back( MOD, "%" );
 			}
 			else if (opStr == "^") {
-				tokQueue.push_back(Token{ HAT, "^" });
+				tokQueue.emplace_back( HAT, "^" );
 			} 
 			else if (opStr == "++") {
-				tokQueue.push_back(Token{ INC, "++" });
+				tokQueue.emplace_back( INC, "++" );
 			}
 			else if (opStr == "--") {
-				tokQueue.push_back(Token{ DEC, "--" });
+				tokQueue.emplace_back( DEC, "--" );
 			}
 
 			// Comparison binary operators
 			else if (opStr == "==") {
-				tokQueue.push_back(Token{ EQ, "==" });
+				tokQueue.emplace_back( EQ, "==" );
 			}
 			else if (opStr == "<") {
-				tokQueue.push_back(Token{ LESS, "<" });
+				tokQueue.emplace_back( LESS, "<" );
 			}
 			else if (opStr == ">") {
-				tokQueue.push_back(Token{ GREATER, ">" });
+				tokQueue.emplace_back( GREATER, ">" );
 			}
 			else if (opStr == "<=") {
-				tokQueue.push_back(Token{ LEQ, "<=" });
+				tokQueue.emplace_back( LEQ, "<=" );
 			}
 			else if (opStr == ">=") {
-				tokQueue.push_back(Token{ GREQ, ">=" });
+				tokQueue.emplace_back( GREQ, ">=" );
 			}
 			else if (opStr == "!=") {
-				tokQueue.push_back(Token{ NEQ, "!=" });
+				tokQueue.emplace_back( NEQ, "!=" );
 			}
 
 			// Logical
 			else if (opStr == "&&") {
-				tokQueue.push_back(Token{ AND, "&&" });
+				tokQueue.emplace_back( AND, "&&" );
 			}
 			else if (opStr == "||") {
-				tokQueue.push_back(Token{ OR, "||" });
+				tokQueue.emplace_back( OR, "||" );
 			}
 			else if (opStr == "!") {
-				tokQueue.push_back(Token{ NOT, "!" });
+				tokQueue.emplace_back( NOT, "!" );
 			}
 
 			else if (opStr == "=") {
-				tokQueue.push_back(Token{ ASSIGN, "=" });
+				tokQueue.emplace_back( ASSIGN, "=" );
 			}
 			else {
 				error("Invalid operator '" + opStr + "'");
@@ -151,34 +151,34 @@ namespace Compiler {
 
 		// Parentheses
 		else if (lookChar == '(') {
-			tokQueue.push_back(Token{ LEFTPAREN, "(" });
+			tokQueue.emplace_back( LEFTPAREN, "(" );
 		}
 
 		else if (lookChar == ')') {
-			tokQueue.push_back(Token{ RIGHTPAREN, ")" });
+			tokQueue.emplace_back( RIGHTPAREN, ")" );
 		}
 
 		else if (lookChar == ',') {
-			tokQueue.push_back(Token{ COMMA, "," });
+			tokQueue.emplace_back( COMMA, "," );
 		}
 
 		// String literals
 		else if (lookChar == '"') {
 			std::string strLit = getString();
-			tokQueue.push_back(Token{ STRING, strLit });
+			tokQueue.emplace_back( STRING, strLit );
 		}
 
 		else if (lookChar == '?') {
-			tokQueue.push_back(Token{ CONDITIONAL, "?" });
+			tokQueue.emplace_back( CONDITIONAL, "?" );
 		}
 
 		else if (lookChar == ':') {
-			tokQueue.push_back(Token{ COLON, ":" });
+			tokQueue.emplace_back( COLON, ":" );
 		}
 
 		// End of input
 		else if (lookChar == ';') {
-			tokQueue.push_back(Token{ END, ");" });
+			tokQueue.emplace_back( END, ");" );
 		}
 
 		// Otherwise
@@ -202,7 +202,7 @@ namespace Compiler {
 
 	// Get and return the next n tokens
 	Token Scanner::lookAhead(int distance) {
-		for (int i = -1; i++; i > distance) {
+		for (int i = -1; i > distance; i++) {
 			getNextToken();
 		}
 		return tokQueue.at(distance);
@@ -211,8 +211,8 @@ namespace Compiler {
 	/* Methods */
 	char Scanner::nextChar() {
 		try {
-			// TODO BAD BAD BAD EOL REALLY NEEDS SORTING OUT
-			if (pos > _inp.length() - 1) {
+			// TODO(James): BAD BAD BAD EOL REALLY NEEDS SORTING OUT
+			if (pos > (_inp.length() - 1)) {
 				lookChar = ';';
 				// Infinite loops rip
 				//error("nextChar: Reached end of input without terminator.");
@@ -226,25 +226,29 @@ namespace Compiler {
 		catch (std::exception& e) {
 			error("nextChar: " + std::string(e.what()));
 		}
+
+		return 0;
 	}
 
 	char Scanner::peekChar() {
 		try {
 			if (pos > _inp.length() - 1) {
-				// TODO BAD BAD BAD THIS FEELS WRONG
+				// TODO(James): BAD BAD BAD THIS FEELS WRONG
 				// If we have reached the end of the input without encountering a semi colon return one anyway?
 				return ';';
 				// This was causing infinite loops.
 				// A missing ; is not a massive error at the moment as it's recoverable
 				//error("peekChar: Reached end of input without terminator.");
 			}
-			else {
+			
 				return _inp.at(pos);
-			}
+			
 		}
 		catch (std::exception& e) {
 			error("peekChar: " + std::string(e.what()));
 		}
+
+		return 0;
 	}
 
 	// Verify char is expected then eat.
@@ -290,10 +294,7 @@ namespace Compiler {
 
 
 	bool Scanner::isWhite(const char &op) const {
-		if (op == ' ' || op == '\n' || op == '\t') {
-			return true;
-		}
-		return false;
+		return op == ' ' || op == '\n' || op == '\t';
 	}
 
 	/* Consumers */
@@ -310,7 +311,7 @@ namespace Compiler {
 	std::string Scanner::getName() {
 		// SHOULD CHECK FOR [a-zA-Z] BEFORE CALL TO ME
 		std::string identStr(1, lookChar);
-		while (isalnum(peekChar())) {
+		while (isalnum(peekChar()) != 0) {
 			identStr += nextChar();
 		}
 		skipWhite();
@@ -321,7 +322,7 @@ namespace Compiler {
 	std::string Scanner::getNum() {
 		// SHOULD CHECK FOR STARTING DIGIT BEFORE CALL TO ME
 		std::string numStr(1, lookChar);
-		while (isdigit(peekChar())) {
+		while (isdigit(peekChar()) != 0) {
 			numStr += nextChar();
 		}
 
@@ -329,7 +330,7 @@ namespace Compiler {
 		if (peekChar() == '.') {
 			numStr += nextChar();
 			// get remaining number after decimal point
-			while (isdigit(peekChar())) {
+			while (isdigit(peekChar()) != 0) {
 				numStr += nextChar();
 			}
 		}
@@ -369,4 +370,4 @@ namespace Compiler {
 		skipWhite();
 		return opStr;
 	}
-}
+}  // namespace Compiler

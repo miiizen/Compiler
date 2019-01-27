@@ -190,7 +190,9 @@ namespace Compiler {
 	{
 		Token look = _scanner.lookAhead(0);
 		if (look.getType() != tok) {
-			error("Expected " + tok);
+			// this does not work
+			//error("Expected " + tok);
+			error("Expected a different token");
 		}
 
 		return _scanner.consume();

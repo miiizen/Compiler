@@ -63,4 +63,4 @@ namespace Compiler {
 		v->visit(unique_ptr<ForAST>(this));
 	}
 
-}
+}  // namespace Compiler

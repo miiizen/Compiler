@@ -11,18 +11,18 @@ namespace Compiler {
 	class Interpreter : public Visitor {
 
 	public:
-		// TODO We want to pass values up and down the nodes as we visit them.  State should be STORED in the visitor
-		virtual void visit(unique_ptr<BlockAST> node);
-		virtual void visit(unique_ptr<NumberAST> node);
-		virtual void visit(unique_ptr<NameAST> node);
-		virtual void visit(unique_ptr<ArrayAST> node);
-		virtual void visit(unique_ptr<AssignmentAST> node);
-		virtual void visit(unique_ptr<FuncCallAST> node);
-		virtual void visit(unique_ptr<BinaryOpAST> node);
-		virtual void visit(unique_ptr<UnaryOpAST> node);
-		virtual void visit(unique_ptr<TernaryOpAST> node);
-		virtual void visit(unique_ptr<IfAST> node);
-		virtual void visit(unique_ptr<ForAST> node);
+		// TODO(James): We want to pass values up and down the nodes as we visit them.  State should be STORED in the visitor
+		void visit(unique_ptr<BlockAST> node) override;
+		void visit(unique_ptr<NumberAST> node) override;
+		void visit(unique_ptr<NameAST> node) override;
+		void visit(unique_ptr<ArrayAST> node) override;
+		void visit(unique_ptr<AssignmentAST> node) override;
+		void visit(unique_ptr<FuncCallAST> node) override;
+		void visit(unique_ptr<BinaryOpAST> node) override;
+		void visit(unique_ptr<UnaryOpAST> node) override;
+		void visit(unique_ptr<TernaryOpAST> node) override;
+		void visit(unique_ptr<IfAST> node) override;
+		void visit(unique_ptr<ForAST> node) override;
 	};
-}
+}  // namespace Compiler
 #endif
