@@ -202,7 +202,7 @@ namespace Compiler {
 
 	// Get and return the next n tokens
 	Token Scanner::lookAhead(int distance) {
-		for (int i = -1; i > distance; i++) {
+		for (int i = -1; i < distance; i++) {
 			getNextToken();
 		}
 		return tokQueue.at(distance);
