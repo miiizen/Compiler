@@ -56,7 +56,7 @@ int main()
 
 	std::unique_ptr<AST> par = myParser.parse();
 
-        std::cout << "made it lol" << std::endl;
+    std::cout << "made it lol" << std::endl;
 
 	return 0;
 }
