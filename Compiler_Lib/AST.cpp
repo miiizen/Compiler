@@ -1,7 +1,7 @@
-#include "stdafx.h"
 #include <iostream>
 #include "token.h"
 #include "AST.h"
+#include <memory>
 
 namespace Compiler {
 	using std::unique_ptr;

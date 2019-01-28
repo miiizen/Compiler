@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <memory>
 #include <utility>
 #include "token.h"
 #include "scanner.h"

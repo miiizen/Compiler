@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <iostream>
 #include <string>
 #include "token.h"
@@ -223,7 +222,7 @@ namespace Compiler {
 			}
 			return lookChar;
 		}
-		catch (std::exception& e) {
+		catch (std::runtime_error& e) {
 			error("nextChar: " + std::string(e.what()));
 		}
 
@@ -244,7 +243,7 @@ namespace Compiler {
 				return _inp.at(pos);
 			
 		}
-		catch (std::exception& e) {
+		catch (std::runtime_error& e) {
 			error("peekChar: " + std::string(e.what()));
 		}
 

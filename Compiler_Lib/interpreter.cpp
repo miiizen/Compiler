@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <memory>
 #include "interpreter.h"
 
 namespace Compiler {

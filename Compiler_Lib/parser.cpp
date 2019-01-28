@@ -1,7 +1,7 @@
-#include "stdafx.h"
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 #include "parser.h"
 #include "token.h"
 #include "AST.h"
@@ -210,7 +210,8 @@ namespace Compiler {
 			prefix = prefixMap.at(tok.getType());
 		}
 		else {
-			throw std::exception("Unrecognised token");
+			//throw std::exception("Unrecognised token");
+                        throw std::runtime_error("Unrecognised token");
 		}
 
 		// Get expression tree for the prefix

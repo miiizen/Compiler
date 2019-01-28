@@ -2,6 +2,7 @@
 #ifndef __INTERPRETER_H
 #define __INTERPRETER_H
 
+#include <memory>
 #include "AST.h"
 
 namespace Compiler {
