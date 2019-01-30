@@ -8,59 +8,59 @@ namespace Compiler {
 
 
 	/*		Accept methods for visitor which can't be inlined.		*/	
-	void BlockAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<BlockAST>(this));
+	void BlockAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void NumberAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<NumberAST>(this));
+	void NumberAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void NameAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<NameAST>(this));
+	void NameAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void ArrayAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<ArrayAST>(this));
+	void ArrayAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void AssignmentAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<AssignmentAST>(this));
+	void AssignmentAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void FuncCallAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<FuncCallAST>(this));
+	void FuncCallAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void BinaryOpAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<BinaryOpAST>(this));
+	void BinaryOpAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void UnaryOpAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<UnaryOpAST>(this));
+	void UnaryOpAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void TernaryOpAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<TernaryOpAST>(this));
+	void TernaryOpAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void IfAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<IfAST>(this));
+	void IfAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
-	void ForAST::accept(Visitor * v)
-	{
-		v->visit(unique_ptr<ForAST>(this));
+	void ForAST::accept(Visitor *v)
+	{		
+		v->visit(this);
 	}
 
 }  // namespace Compiler

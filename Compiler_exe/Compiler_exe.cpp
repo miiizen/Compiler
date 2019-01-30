@@ -2,6 +2,7 @@
 #include "../Compiler_Lib/scanner.h"
 #include "../Compiler_Lib/token.h"
 #include "../Compiler_Lib/parser.h"
+#include "../Compiler_Lib/visualizer.h"
 
 
 using namespace Compiler;
@@ -54,9 +55,12 @@ int main()
 	myParser.infixLeft(LEQ, RELATIONAL);
 	myParser.infixLeft(GREQ, RELATIONAL);
 
-	std::unique_ptr<AST> par = myParser.parse();
+	std::shared_ptr<AST> tree = myParser.parse();
+
+	Visualizer viz = Visualizer();
+	viz.preorder(tree.get());
 
     std::cout << "made it lol" << std::endl;
-
+	
 	return 0;
 }

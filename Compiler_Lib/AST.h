@@ -13,6 +13,7 @@ namespace Compiler {
 
 	class Visitor;
 	using std::unique_ptr;
+	using std::shared_ptr;
 
 	// Data types available in the language
 	/*enum DataType {
@@ -110,6 +111,9 @@ namespace Compiler {
 			: name(std::move(name)), rhs(std::move(rhs)) {}
 		const ASTType getType() override { return type; };
 
+		std::unique_ptr<AST> getName() { return std::move(name); };
+		std::unique_ptr<AST> getRhs() { return std::move(rhs); };
+
 		// Visitor hook
 		void accept(Visitor *v) override;
 	};
@@ -141,6 +145,10 @@ namespace Compiler {
 
 		// Visitor hook
 		void accept(Visitor *v) override;
+
+		std::unique_ptr<AST> getLhs() { return std::move(lhs); };
+		std::unique_ptr<AST> getRhs() { return std::move(rhs); };
+		TokenType getOp() { return op; };
 	};
 
 	// Represents a unary operator
@@ -156,6 +164,9 @@ namespace Compiler {
 
 		// Visitor hook
 		void accept(Visitor *v) override;
+
+		std::unique_ptr<AST> getOperand() { return std::move(operand); };
+		TokenType getOp() { return op; };
 	};
 
 	// Represents a ternary operator
@@ -170,6 +181,11 @@ namespace Compiler {
 
 		// Visitor hook
 		void accept(Visitor *v) override;
+
+		std::unique_ptr<AST> getCond() { return std::move(condition); };
+		std::unique_ptr<AST> getThen() { return std::move(thenArm); };
+		std::unique_ptr<AST> getElse() { return std::move(elseArm); };
+
 	};
 
 	// If/else statement
@@ -184,6 +200,10 @@ namespace Compiler {
 
 		// Visitor hook
 		void accept(Visitor *v) override;
+
+		std::unique_ptr<AST> getCond() { return std::move(condition); };
+		std::unique_ptr<AST> getThen() { return std::move(thenBlock); };
+		std::unique_ptr<AST> getElse() { return std::move(elseBlock); };
 	};
 
 	class ForAST : public AST {
@@ -203,6 +223,13 @@ namespace Compiler {
 
 		// Visitor hook
 		void accept(Visitor *v) override;
+
+		std::string getVarName() { return varName; };
+		std::unique_ptr<AST> getStart() { return std::move(start); };
+		std::unique_ptr<AST> getEnd() { return std::move(end); };
+		std::unique_ptr<AST> getStep() { return std::move(step); };
+		std::unique_ptr<AST> getBody() { return std::move(body); };
+
 	};
 
 
@@ -211,17 +238,17 @@ namespace Compiler {
 	// Interface for other visitor classes to inherit from (interpreter, compiler)
 	class Visitor {
 	public:
-		virtual void visit(unique_ptr<BlockAST> node) = 0;
-		virtual void visit(unique_ptr<NumberAST> node) = 0;
-		virtual void visit(unique_ptr<NameAST> node) = 0;
-		virtual void visit(unique_ptr<ArrayAST> node) = 0;
-		virtual void visit(unique_ptr<AssignmentAST> node) = 0;
-		virtual void visit(unique_ptr<FuncCallAST> node) = 0;
-		virtual void visit(unique_ptr<BinaryOpAST> node) = 0;
-		virtual void visit(unique_ptr<UnaryOpAST> node) = 0;
-		virtual void visit(unique_ptr<TernaryOpAST> node) = 0;
-		virtual void visit(unique_ptr<IfAST> node) = 0;
-		virtual void visit(unique_ptr<ForAST> node) = 0;
+		virtual void visit(BlockAST* node) = 0;
+		virtual void visit(NumberAST* node) = 0;
+		virtual void visit(NameAST* node) = 0;
+		virtual void visit(ArrayAST* node) = 0;
+		virtual void visit(AssignmentAST* node) = 0;
+		virtual void visit(FuncCallAST* node) = 0;
+		virtual void visit(BinaryOpAST* node) = 0;
+		virtual void visit(UnaryOpAST* node) = 0;
+		virtual void visit(TernaryOpAST* node) = 0;
+		virtual void visit(IfAST* node) = 0;
+		virtual void visit(ForAST* node) = 0;
 	};
 }  // namespace Compiler
 
