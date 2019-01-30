@@ -8,10 +8,10 @@ namespace Compiler {
 	using std::unique_ptr;
 	using std::shared_ptr;
 
-	void Visualizer::printText(std::string text, bool end, bool tabs)
+	void Visualizer::printText(std::string text, bool end, bool doTabs)
 	{
 		std::string prtStr = "";
-		if (tabs) {
+		if (doTabs) {
 			for (int i = 0; i < tabs; i++) {
 				prtStr += "\t";
 			}
@@ -70,15 +70,17 @@ namespace Compiler {
 
 	void Visualizer::visit(BinaryOpAST* node)
 	{
+		std::string op = opMap[node->getOp()];
 		node->getLhs()->accept(this);
-		printText(" = ", false, false);
+		printText(" " + op + " ", false, false);
 		node->getRhs()->accept(this);
 	}
 
 	void Visualizer::visit(UnaryOpAST* node)
 	{
 		std::string op = opMap[node->getOp()];
-		node->getOperand->accept(this);
+		printText(" " + op, false, false);
+		node->getOperand()->accept(this);
 	}
 
 	void Visualizer::visit(TernaryOpAST* node)
@@ -104,10 +106,10 @@ namespace Compiler {
 
 		printText("  Step: ", false, false);
 		auto step = node->getStep();
-		end->accept(this);
+		step->accept(this);
 		std::cout << std::endl;
 
-		tabs += 1;
+		//tabs += 1;
 		auto bod = node->getBody();
 		bod->accept(this);
 	}

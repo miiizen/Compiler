@@ -9,6 +9,7 @@ using namespace Compiler;
 
 int main()
 {
+	std::cout << "BEGIN\nFOR i = 1, i < n, 1 IN\ni+7 5+8\nENDFOR\nEND" << std::endl << std::endl;
 	Parser myParser = Parser("BEGIN\nFOR i = 1, i < n, 1 IN\ni+7 5+8\nENDFOR\nEND");
 
 	// Set up grammar
