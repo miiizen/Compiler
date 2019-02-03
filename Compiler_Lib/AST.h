@@ -33,7 +33,8 @@ namespace Compiler {
 		UNARYOP,
 		TERNARYOP,
 		IF,
-		FOR
+		FOR,
+		FUNCDEF
 	};
 
 	// Base AST node class
@@ -232,6 +233,19 @@ namespace Compiler {
 
 	};
 
+	class FuncDefAST : public AST {
+		ASTType type = ASTType::FUNCDEF;
+		std::unique_ptr<AST> name;
+		std::vector<std::shared_ptr<AST>> args;
+	public:
+		FuncDefAST(std::unique_ptr<AST> name, std::vector<std::shared_ptr<AST>> args)
+		: name(std::move(name)), args(std::move(args)) {}
+		const ASTType getType() override { return type; };
+
+		// Visitor hook
+		void accept(Visitor *v) override;
+	};
+
 
 	/* AST visitor */
 
@@ -249,6 +263,7 @@ namespace Compiler {
 		virtual void visit(TernaryOpAST* node) = 0;
 		virtual void visit(IfAST* node) = 0;
 		virtual void visit(ForAST* node) = 0;
+		virtual void visit(FuncDefAST* node) = 0;
 	};
 }  // namespace Compiler
 

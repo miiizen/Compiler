@@ -27,6 +27,7 @@ namespace Compiler {
 		PREFIX,			// - ! (
 		POSTFIX,		// ++ --
 		CALL,			// ( [
+		DEFINITON		// function definition
 	};
 
 	/*		PARSER MODULES		*/
@@ -47,6 +48,11 @@ namespace Compiler {
 
 	// Class for variables
 	class NameParser : public IPrefixParser {
+	public:
+		std::unique_ptr<AST> parse(Parser* parser, const Token& tok) override;
+	};
+
+	class FunctionParser : public IPrefixParser {
 	public:
 		std::unique_ptr<AST> parse(Parser* parser, const Token& tok) override;
 	};
@@ -149,8 +155,8 @@ namespace Compiler {
 	public:
 		// Constructor
 		Parser(std::string inp)
-			: _inp{std::move( inp )},				// Get input
-			_scanner{ Scanner(_inp) }	// Initialize scanner
+			: _inp{std::move( inp )},			// Get input
+			_scanner{ Scanner(_inp) }			// Initialize scanner
 		{ }
 
 		// Register prefix tokens for use in the parser
@@ -185,6 +191,9 @@ namespace Compiler {
 
 		// Parse a statement block
 		std::unique_ptr<AST> block();
+
+		// Parse a function definition
+		std::unique_ptr<AST> defStmt();
 
 		// Parse an if statement
 		std::unique_ptr<AST> ifStmt();

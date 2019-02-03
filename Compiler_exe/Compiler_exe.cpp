@@ -9,8 +9,8 @@ using namespace Compiler;
 
 int main()
 {
-	std::cout << "BEGIN\nFOR i = 1, i < n, 1 IN\ni+7 5+8\nENDFOR\nEND" << std::endl << std::endl;
-	Parser myParser = Parser("BEGIN\nFOR i = 1, i < n, 1 IN\ni+7 5+8\nENDFOR\nEND");
+	std::cout << "BEGIN\nFOR i = 1, i < n, 1 IN\ni+7 f(1)\nENDFOR\nEND" << std::endl << std::endl;
+	Parser myParser = Parser("BEGIN DEFINE f(a, b) END");
 
 	// Set up grammar
 
@@ -18,7 +18,7 @@ int main()
 	myParser.registerPrefixTok(IDENTIFIER, std::make_unique<NameParser>());
 	myParser.registerPrefixTok(NUMBER, std::make_unique<NumberParser>());
 	myParser.registerInfixTok(ASSIGN, std::make_unique<AssignmentParser>(ASSIGNMENT));
-	//TODO +=, -= ???
+	myParser.registerPrefixTok(DEFINE, std::make_unique<FunctionParser>());
 
 	// Parens
 	myParser.registerPrefixTok(LEFTPAREN, std::make_unique<GroupParser>(PREFIX));

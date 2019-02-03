@@ -20,6 +20,7 @@ namespace Compiler {
 		NUMBER, STRING, IDENTIFIER, BOOL,
 		BEGIN, IF, ENDIF, ELSE, THEN,
 		FOR, IN, ENDFOR,
+		DEFINE,
 		NEWLINE, END
 	};
 

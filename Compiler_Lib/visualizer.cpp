@@ -1,8 +1,6 @@
 #include "visualizer.h"
-#include "visualizer.h"
 #include <memory>
 #include "AST.h"
-#include "visualizer.h"
 
 namespace Compiler {
 	using std::unique_ptr;
@@ -10,7 +8,7 @@ namespace Compiler {
 
 	void Visualizer::printText(std::string text, bool end, bool doTabs)
 	{
-		std::string prtStr = "";
+		std::string prtStr;
 		if (doTabs) {
 			for (int i = 0; i < tabs; i++) {
 				prtStr += "\t";
@@ -34,7 +32,7 @@ namespace Compiler {
 	{
 		printText("BLOCK:");
 		tabs += 1;
-		for (auto i : node->getChildren()) {
+		for (const auto &i : node->getChildren()) {
 			i->accept(this);
 		}
 	} 
@@ -112,5 +110,10 @@ namespace Compiler {
 		//tabs += 1;
 		auto bod = node->getBody();
 		bod->accept(this);
+	}
+
+	void Visualizer::visit(FuncDefAST *node)
+	{
+
 	}
 }  // namespace Compiler

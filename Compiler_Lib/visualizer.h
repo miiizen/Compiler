@@ -13,7 +13,6 @@ namespace Compiler {
 	// output some code for a .DOT file on each node
 	class Visualizer : public Visitor {
 	private:
-		//std::unique_ptr<AST> tree;
 		int tabs;
 
 		void printText(std::string text, bool end = true, bool tabs = true);
@@ -55,6 +54,7 @@ namespace Compiler {
 		void visit(TernaryOpAST* node) override;
 		void visit(IfAST* node) override;
 		void visit(ForAST* node) override;
+		void visit(FuncDefAST* node) override;
 	};
 }  // namespace Compiler
 #endif

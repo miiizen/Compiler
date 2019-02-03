@@ -74,6 +74,10 @@ namespace Compiler {
 				tokQueue.emplace_back( END, identStr );
 			}
 
+			else if (identStr == "DEFINE") {
+				tokQueue.emplace_back( DEFINE, identStr );
+			}
+
 			// just an identifier
 			else {
 				tokQueue.emplace_back( IDENTIFIER, identStr );

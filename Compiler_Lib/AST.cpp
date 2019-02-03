@@ -63,4 +63,9 @@ namespace Compiler {
 		v->visit(this);
 	}
 
+	void FuncDefAST::accept(Visitor *v)
+	{
+		v->visit(this);
+	}
+
 }  // namespace Compiler

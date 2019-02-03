@@ -28,6 +28,34 @@ namespace Compiler {
 		return name;
 	}
 
+	/*		Function definition		*/
+	std::unique_ptr<AST> FunctionParser::parse(Parser *parser, const Token &tok)
+	{
+		// DEFINE f(a, b, c)
+		// Already consumed DEFINE
+
+		// get name
+		unique_ptr<AST> name = parser->parseExpression(DEFINITON);
+		// Check name is a name
+		if (name->getType() != ASTType::NAME) {
+			parser->error("The left hand side of an assignment must be a name.");
+		}
+
+		parser->expect(LEFTPAREN);
+
+		// Parse comma separated values until )
+		std::vector<std::shared_ptr<AST>> args = {};
+
+		if (!parser->match(RIGHTPAREN)) {
+			do {
+				args.push_back(parser->parseExpression());
+			} while (parser->match(COMMA));
+			parser->expect(RIGHTPAREN);
+		}
+
+		return std::make_unique<FuncDefAST>(std::move(name), std::move(args));
+	}
+
 	/*		PrefixOperator		*/
 	unique_ptr<AST> PrefixOperatorParser::parse(Parser* parser, const Token& tok)
 	{
@@ -41,7 +69,7 @@ namespace Compiler {
 	/*		Group Parser		*/
 	unique_ptr<AST> GroupParser::parse(Parser * parser, const Token & tok)
 	{
-		unique_ptr<AST> expr = parser->parseExpression();
+		unique_ptr<AST> expr = parser->parseExpression(ASSIGNMENT);
 		parser->expect(RIGHTPAREN);
 		return expr;
 	}
@@ -80,14 +108,13 @@ namespace Compiler {
 	}
 
 	/*		Assignment operator		*/
-	// TODO(James): NEEDS FINISHING NOT FINISHED FINISH ME PLEASE!!!
 	unique_ptr<AST> AssignmentParser::parse(Parser * parser, unique_ptr<AST> left, const Token & tok)
 	{
 		// Get rhs of expression
 		unique_ptr<AST> right = parser->parseExpression(Precedence::ASSIGNMENT - 1);
 
 		// Check if lhs is of type name
-		if (left->getType() == ASTType::NAME) {
+		if (left->getType() != ASTType::NAME) {
 			parser->error("The left hand side of an assignment must be a name.");
 		}
 
@@ -211,7 +238,7 @@ namespace Compiler {
 		}
 		else {
 			//throw std::exception("Unrecognised token");
-                        throw std::runtime_error("Unrecognised token");
+			throw std::runtime_error("Unrecognised token");
 		}
 
 		// Get expression tree for the prefix
@@ -268,6 +295,20 @@ namespace Compiler {
 		unique_ptr<AST> blk = std::make_unique<BlockAST>(std::move(stmts));
 		return blk;
 	}
+
+	std::unique_ptr<AST> Parser::defStmt()
+	{
+//		// DEFINE name(arg1, arg2)
+//		// Expect define keyword
+//		expect(DEFINE);
+//
+//		// get prototype name
+//		unique_ptr<AST> name = parseExpression();
+//
+//
+//		return unique_ptr<AST>();
+	}
+
 
 	unique_ptr<AST> Parser::ifStmt()
 	{
@@ -362,13 +403,12 @@ namespace Compiler {
 		}
 		
 			return 0;
-		
 	}
 
 	void Parser::error(std::string message)
 	{
-		throw message;
 		std::cerr << "Scanner: " << message << std::endl;
+		throw message;
 	}
 
 }  // namespace Compiler
