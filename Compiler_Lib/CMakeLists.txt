@@ -25,6 +25,6 @@ add_library (compiler_lib
 
 target_include_directories (compiler_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-llvm_map_components_to_libnames (llvm_libs support core irreader)
+llvm_map_components_to_libnames (llvm_libs support core irreader native)
 
 target_link_libraries(compiler_lib ${llvm_libs})

@@ -46,7 +46,7 @@ namespace Compiler {
 
 	void Visualizer::visit(NameAST* node)
 	{
-		printText(" " + node->getName() + " ", false, false);
+		printText(" " + node->toString() + " ", false, false);
 	}
 
 	void Visualizer::visit(ArrayAST* node)

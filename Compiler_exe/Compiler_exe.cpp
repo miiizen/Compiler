@@ -1,16 +1,19 @@
 #include <memory>
+#include <codegen.h>
 #include "../Compiler_Lib/scanner.h"
 #include "../Compiler_Lib/token.h"
 #include "../Compiler_Lib/parser.h"
 #include "../Compiler_Lib/visualizer.h"
+#include "../Compiler_Lib/codegen.h"
 
 
 using namespace Compiler;
 
 int main()
 {
-	std::cout << "BEGIN\nFOR i = 1, i < n, 1 IN\ni+7 f(1)\nENDFOR\nEND" << std::endl << std::endl;
-	Parser myParser = Parser("BEGIN DEFINE f(a, b) END");
+    std::string code = "BEGIN DEFINE f(a, b) 7+7 ENDDEF END";
+	std::cout << code << std::endl << std::endl;
+	Parser myParser = Parser(code);
 
 	// Set up grammar
 
@@ -58,8 +61,10 @@ int main()
 
 	std::shared_ptr<AST> tree = myParser.parse();
 
-	Visualizer viz = Visualizer();
-	viz.preorder(tree.get());
+	Codegen generator;
+
+	tree->accept(&generator);
+
 
     std::cout << "made it lol" << std::endl;
 	

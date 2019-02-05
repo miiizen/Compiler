@@ -82,7 +82,7 @@ namespace Compiler {
 	public:
 		NameAST(std::string name) : name(std::move(name)) {}
 		const ASTType getType() override { return type; };
-		const std::string getName() { return name; };
+		const std::string toString() { return name; };
 
 		// Visitor hook
 		void accept(Visitor *v) override;
@@ -99,7 +99,9 @@ namespace Compiler {
 		const ASTType getType() override { return type; };
 		std::vector<std::shared_ptr<AST>> values;
 
-		// Visitor hook
+        std::unique_ptr<AST> getName() { return std::move(name); };
+
+        // Visitor hook
 		void accept(Visitor *v) override;
 	};
 
@@ -129,7 +131,10 @@ namespace Compiler {
 			: name(std::move(name)), args(std::move(args)) {}
 		const ASTType getType() override { return type; };
 
-		// Visitor hook
+        std::unique_ptr<AST> getName() { return std::move(name); };
+        std::vector<shared_ptr<AST>> getArgs() { return args; };
+
+        // Visitor hook
 		void accept(Visitor *v) override;
 	};
 
@@ -235,14 +240,18 @@ namespace Compiler {
 
 	class FuncDefAST : public AST {
 		ASTType type = ASTType::FUNCDEF;
-		std::unique_ptr<AST> name;
+		std::unique_ptr<AST> name, body;
 		std::vector<std::shared_ptr<AST>> args;
 	public:
-		FuncDefAST(std::unique_ptr<AST> name, std::vector<std::shared_ptr<AST>> args)
-		: name(std::move(name)), args(std::move(args)) {}
+		FuncDefAST(std::unique_ptr<AST> name, std::vector<std::shared_ptr<AST>> args, unique_ptr<AST> body)
+		: name(std::move(name)), args(std::move(args)), body(std::move(body)) {}
 		const ASTType getType() override { return type; };
 
-		// Visitor hook
+        std::unique_ptr<AST> getName() { return std::move(name); };
+        std::unique_ptr<AST> getBod() { return std::move(body); };
+        std::vector<shared_ptr<AST>> getArgs() { return args; };
+
+        // Visitor hook
 		void accept(Visitor *v) override;
 	};
 

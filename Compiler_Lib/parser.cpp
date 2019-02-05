@@ -32,6 +32,8 @@ namespace Compiler {
 	std::unique_ptr<AST> FunctionParser::parse(Parser *parser, const Token &tok)
 	{
 		// DEFINE f(a, b, c)
+		//    ...
+		// ENDDEF
 		// Already consumed DEFINE
 
 		// get name
@@ -53,7 +55,14 @@ namespace Compiler {
 			parser->expect(RIGHTPAREN);
 		}
 
-		return std::make_unique<FuncDefAST>(std::move(name), std::move(args));
+		unique_ptr<AST> body = parser->block();
+		if (!body) {
+			parser->error("Function definition expects a body!");
+		}
+
+		parser->expect(ENDDEF);
+
+		return std::make_unique<FuncDefAST>(std::move(name), std::move(args), std::move(body));
 	}
 
 	/*		PrefixOperator		*/
@@ -278,7 +287,7 @@ namespace Compiler {
 	{
 		std::vector<std::shared_ptr<AST>> stmts = {};
 
-		while ((_scanner.lookAhead(0).getType() != END) && (_scanner.lookAhead(0).getType() != ELSE) && (_scanner.lookAhead(0).getType() != ENDIF) && (_scanner.lookAhead(0).getType() != ENDFOR)) {
+		while ((_scanner.lookAhead(0).getType() != END) && (_scanner.lookAhead(0).getType() != ELSE) && (_scanner.lookAhead(0).getType() != ENDIF) && (_scanner.lookAhead(0).getType() != ENDFOR) && (_scanner.lookAhead(0).getType() != ENDDEF)) {
 			Token tok = _scanner.getCurrentToken();
 			switch (tok.getType()) {
 			case IF:

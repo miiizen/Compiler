@@ -27,6 +27,27 @@ namespace Compiler{
     using std::shared_ptr;
     using namespace llvm;
 
+    // Class to get names since they are hidden in another AST class.
+    // I have no idea whether this is the correct way of doing things, but I do like a visitor
+    class NameGetter : public Visitor {
+        // store the last name accessed
+        std::string lastName;
+    public:
+        std::string getLastName() { return lastName; };
+        void visit(BlockAST* node) override { /* No name */ };
+        void visit(NumberAST* node) override { /* No name */ };
+        void visit(NameAST* node) override { lastName = node->toString(); };
+        void visit(ArrayAST* node) override { node->getName()->accept(this); };
+        void visit(AssignmentAST* node) override { node->getName()->accept(this); };
+        void visit(FuncCallAST* node) override { node->getName()->accept(this); };
+        void visit(BinaryOpAST* node) override { /* No name */ };
+        void visit(UnaryOpAST* node) override { /* No name */ };
+        void visit(TernaryOpAST* node) override { /* No name */ };
+        void visit(IfAST* node) override { /* No name */ };
+        void visit(ForAST* node) override { /* No name */ };
+        void visit(FuncDefAST* node) override { node->getName()->accept(this); };
+    };
+
     class Codegen : public Visitor {
         // Owns lots of core LLVM data. Needs to be passed into APIs
         LLVMContext context;
@@ -36,10 +57,27 @@ namespace Compiler{
         unique_ptr<Module> module;
         // keeps track of values in the current scope. A symbol table
         std::map<std::string, Value*> namedValues;
+        // Pass manager to optimize functions
+        std::unique_ptr<legacy::FunctionPassManager> fpm;
+        // Since we cannot return, store values and functions which the code generation functions should return in here
+        Value * retVal;
+        Function * retFunc;
+        // Visitor to extract names
+        NameGetter nameGetter;
     public:
-        // Initialize builder because it's weird?
-        Codegen()
-            : builder(context) {}
+        // Initialize builder, module with context.  also init pointers to nullptr
+        Codegen() : builder(context), module(std::make_unique<Module>("JIT", context)), fpm(std::make_unique<legacy::FunctionPassManager>(module.get())), retVal(nullptr), retFunc(nullptr) {
+            // simple peephole optimizations
+            fpm->add(createInstructionCombiningPass());
+            // re-associate expressions
+            fpm->add(createReassociatePass());
+            // eliminate common sub-expressions
+            fpm->add(createGVNPass());
+            // simplify control flow graph
+            fpm->add(createCFGSimplificationPass());
+            // init
+            fpm->doInitialization();
+        }
 
         Value *logErrorV(const char *str);
         void visit(BlockAST* node) override;
