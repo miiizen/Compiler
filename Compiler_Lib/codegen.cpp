@@ -194,17 +194,20 @@ namespace Compiler {
 
         // Emit else block
         // TODO(James) optional else??
+        auto elseTree = node->getElse();
+        Value *elseVal;
         parentFunc->getBasicBlockList().push_back(elseBlock);
         builder.SetInsertPoint(elseBlock);
+        if (elseTree) {
+            elseTree->accept(this);
+            elseVal = retVal;
+            if (!elseVal) {
+                logErrorV("No then value");
+                retVal = nullptr;
+                return;
+            }
 
-        node->getElse()->accept(this);
-        Value *elseVal = retVal;
-        if (!elseVal) {
-            logErrorV("No then value");
-            retVal = nullptr;
-            return;
         }
-
         builder.CreateBr(mergeBlock);
         // codegen of else can change current block update for phi TODO(JAMES) UNDERSTAND
         elseBlock = builder.GetInsertBlock();
@@ -215,7 +218,8 @@ namespace Compiler {
         PHINode *phi = builder.CreatePHI(Type::getDoubleTy(context), 2, "iftmp");
 
         phi->addIncoming(thenVal, thenBlock);
-        phi->addIncoming(elseVal, elseBlock);
+        if (elseTree)
+            phi->addIncoming(elseVal, elseBlock);
         //return phi as value computed by expression
         retVal = phi;
 

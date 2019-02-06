@@ -32,7 +32,7 @@ int main()
      *   ENDDEF
      * END
      * BEGIN DEFINE f() FOR i = 0, i < 4, 2 IN i + 3 ENDFOR ENDDEF END */
-    std::string code = "BEGIN DEFINE f(a, b) IF a<b THEN 9+2 ELSE 9-2 ENDIF ENDDEF END";
+    std::string code = "BEGIN DEFINE f(a, b) IF a<b THEN 9+2 ENDIF ENDDEF END";
 	std::cout << code << std::endl << std::endl;
 	Parser myParser = Parser(code);
 
