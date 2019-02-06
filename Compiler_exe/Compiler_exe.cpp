@@ -11,7 +11,28 @@ using namespace Compiler;
 
 int main()
 {
-    std::string code = "BEGIN DEFINE f(a, b) 7+7 ENDDEF END";
+    /* IF TEST:
+     * BEGIN
+     *    DEFINE f(a, b)
+     *     IF a<b THEN
+     *       9+2
+     *     ELSE
+     *       9-2
+     *     ENDIF
+     *    ENDDEF
+     *  END
+     * BEGIN DEFINE f(a, b) IF a<b THEN 9+2 ELSE 9-2 ENDIF ENDDEF END */
+
+    /* FOR TEST
+     * BEGIN
+     *   DEFINE f()
+     *     FOR i = 0, i < 4, 2 IN
+     *       i + 3
+     *     ENDFOR
+     *   ENDDEF
+     * END
+     * BEGIN DEFINE f() FOR i = 0, i < 4, 2 IN i + 3 ENDFOR ENDDEF END */
+    std::string code = "BEGIN DEFINE f(a, b) IF a<b THEN 9+2 ELSE 9-2 ENDIF ENDDEF END";
 	std::cout << code << std::endl << std::endl;
 	Parser myParser = Parser(code);
 

@@ -130,6 +130,7 @@ namespace Compiler {
                 // Convert integer into unsigned float
                 val = builder.CreateUIToFP(lhs, Type::getDoubleTy(context));
                 retVal = val;
+                break;
 
                 //TODO(James) implement all binary operators
             default:
@@ -192,6 +193,7 @@ namespace Compiler {
 
 
         // Emit else block
+        // TODO(James) optional else??
         parentFunc->getBasicBlockList().push_back(elseBlock);
         builder.SetInsertPoint(elseBlock);
 
@@ -221,7 +223,96 @@ namespace Compiler {
 
     void Codegen::visit(ForAST *node)
     {
+        // Get start value
+        node->getStart()->accept(this);
+        Value *startVal = retVal;
+        if (!startVal) {
+            logErrorV("No start value found");
+            retVal = nullptr;
+            return;
+        }
 
+        // Set up basic block for loop body
+        Function *parentFunc = builder.GetInsertBlock()->getParent();
+        BasicBlock *preheaderBlock = builder.GetInsertBlock();
+        BasicBlock *loopBlock = BasicBlock::Create(context, "loop", parentFunc);
+
+        // finish with explicit fall through to loop block
+        builder.CreateBr(loopBlock);
+
+        // Begin insertion into loop block
+        builder.SetInsertPoint(loopBlock);
+
+        // Start PHI node with entry for start value
+        PHINode *var = builder.CreatePHI(Type::getDoubleTy(context), 2, node->getVarName());
+        var->addIncoming(startVal, preheaderBlock);
+
+        // Emit code for loop body
+        // Use phi node for the loop variable.  save it so it can be restored
+        Value *oldLoopVarVal = namedValues[node->getVarName()];
+        namedValues[node->getVarName()] = var;
+
+        // Emit code for loop body
+        node->getBody()->accept(this);
+        if (!retVal) {
+            logErrorV("No loop body generated");
+            retVal = nullptr;
+            return;
+        }
+
+        // Emit step value
+        Value *stepVal = nullptr;
+        // getStep() removes from AST.  Is this what I wanted to do..?
+        auto step = node->getStep();
+        if (step) {
+            step->accept(this);
+            stepVal = retVal;
+            if (!stepVal) {
+                logErrorV("Expected a step value");
+                retVal = nullptr;
+                return;
+            }
+        } else {
+            // If not specified, use 1.0
+            stepVal = ConstantFP::get(context, APFloat(1.0));
+        }
+        // Value of loop variable on next iteration
+        Value *nextVar = builder.CreateFAdd(var, stepVal, "nextvar");
+
+        // End condition
+        node->getEnd()->accept(this);
+        Value *endCondition = retVal;
+        if (!endCondition) {
+            logErrorV("Expected an end condition");
+            retVal = nullptr;
+            return;
+        }
+
+        // Convert condition to bool
+        endCondition = builder.CreateFCmpONE(endCondition, ConstantFP::get(context, APFloat(0.0)), "loopcond");
+
+        // Create post loop block and insert
+        BasicBlock *loopEndBlock = builder.GetInsertBlock();
+        BasicBlock *afterBlock = BasicBlock::Create(context, "afterloop", parentFunc);
+
+        // Insert conditional into end of block
+        builder.CreateCondBr(endCondition, loopBlock, afterBlock);
+
+        // Insert any new code in the post loop block
+        builder.SetInsertPoint(afterBlock);
+
+        // Create exit block - decide to loop again or continue based on PHI node
+        // update PHI
+        var->addIncoming(nextVar, loopEndBlock);
+
+        // Restore unshadowed variable
+        if (oldLoopVarVal)
+            namedValues[node->getVarName()] = oldLoopVarVal;
+        else
+            namedValues.erase(node->getVarName());
+
+        // For should always return 0.0
+        retVal = Constant::getNullValue(Type::getDoubleTy(context));
     }
 
     void Codegen::visit(FuncDefAST *node)
@@ -285,7 +376,7 @@ namespace Compiler {
         verifyFunction(*thisFunc);
 
         // Optimise function
-        fpm->run(*thisFunc);
+        //fpm->run(*thisFunc);
         thisFunc->viewCFG();
 
         retFunc = thisFunc;
