@@ -10,8 +10,6 @@ add_definitions(${LLVM_DEFINITIONS})
 add_library (compiler_lib 
         AST.cpp
         AST.h
-        #interpreter.cpp
-        #interpreter.h
         parser.cpp
         parser.h
         scanner.cpp

@@ -10,6 +10,7 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Module.h"
@@ -20,6 +21,7 @@
 #include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Utils.h"
 #include <map>
 
 namespace Compiler{
@@ -29,6 +31,7 @@ namespace Compiler{
 
     // Class to get names since they are hidden in another AST class.
     // I have no idea whether this is the correct way of doing things, but I do like a visitor
+    // TODO(James) ok all names should be strings, this class is ridiculous
     class NameGetter : public Visitor {
         // store the last name accessed
         std::string lastName;
@@ -56,7 +59,7 @@ namespace Compiler{
         // Contains functions + global variables.  Can be seen as the top level structure
         unique_ptr<Module> module;
         // keeps track of values in the current scope. A symbol table
-        std::map<std::string, Value*> namedValues;
+        std::map<std::string, AllocaInst*> namedValues;
         // Pass manager to optimize functions
         std::unique_ptr<legacy::FunctionPassManager> fpm;
         // Since we cannot return, store values and functions which the code generation functions should return in here
@@ -64,9 +67,13 @@ namespace Compiler{
         Function * retFunc;
         // Visitor to extract names
         NameGetter nameGetter;
+        // Helper function to create an alloca instruction in the entry block of a function
+        AllocaInst *CreateEntryBlockAlloca(Function *func, const std::string &varName);
     public:
         // Initialize builder, module with context.  also init pointers to nullptr
         Codegen() : builder(context), module(std::make_unique<Module>("JIT", context)), fpm(std::make_unique<legacy::FunctionPassManager>(module.get())), retVal(nullptr), retFunc(nullptr) {
+            // Promote allocas to registers (speed)
+            fpm->add(createPromoteMemoryToRegisterPass());
             // simple peephole optimizations
             fpm->add(createInstructionCombiningPass());
             // re-associate expressions
@@ -75,9 +82,11 @@ namespace Compiler{
             fpm->add(createGVNPass());
             // simplify control flow graph
             fpm->add(createCFGSimplificationPass());
-            // init
+            // init pass manager
             fpm->doInitialization();
         }
+
+        unique_ptr<Module> getMod() { return std::move(module); };
 
         Value *logErrorV(const char *str);
         void visit(BlockAST* node) override;

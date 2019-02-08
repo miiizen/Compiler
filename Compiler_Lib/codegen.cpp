@@ -7,6 +7,7 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Module.h"
@@ -17,6 +18,7 @@
 #include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Utils.h"
 #include <map>
 
 namespace Compiler {
@@ -31,10 +33,52 @@ namespace Compiler {
     void Codegen::visit(BlockAST *node)
     {
         // Recursively generate code for children
-        // TODO(JAMES) Return values from multiple statements? make whole block and return.  next few 
-        for (const auto &child : node->getChildren()) {
-            child->accept(this);
+        // TODO(JAMES) Return values from multiple statements? make whole block and return.
+        // Append BasicBlocks to function blocklist.  The blocks MUST end with a branch to the next block
+        // REMEMBER: ALL BASIC BLOCKS MUST BE TERMINATED WITH A RETURN OR BRANCH! The LLVM verifier will fail otherwise
+        // Also, create the blocks you think you'll need early on!
+
+        // Get the function we are inserting into
+        BasicBlock *currentBlock = builder.GetInsertBlock();
+        // If null, we are at the top level of the program.
+        // We want to generate function definitions in this case
+        // The structure of the program (just function definitions at the top level) should be verified at some point,
+        // //probably earlier on.
+        if (!currentBlock) {
+            for (const auto &child : node->getChildren()) {
+                if(child->getType() != ASTType::FUNCDEF) {
+                    logErrorV("Expected function definitions at the top level");
+                }
+                child->accept(this);
+            }
+            return;
         }
+
+        // If there is a parent, we gt to this point and assume we are in a function
+        Function *parentFunc = currentBlock->getParent();
+
+        // Generate code recursively
+        for (const auto &child : node->getChildren()) {
+            BasicBlock *lastBlock = &parentFunc->back();
+            // Create block at the end of the parent
+            BasicBlock *nextBlock = BasicBlock::Create(context, "block", parentFunc);
+            // Create branch to nextBlock from lastBlock
+            builder.SetInsertPoint(lastBlock);
+            builder.CreateBr(nextBlock);
+            // Move builder to nextBlock - GetInsertBlock for recursive generation of blocks that might change their
+            // parents?
+            builder.SetInsertPoint(nextBlock);
+
+            // emit code for child
+            child->accept(this);
+            Value * line = retVal;
+            if (!line) {
+                logErrorV("No value returned from child in block!");
+                retVal = nullptr;
+                return;
+            }
+        }
+        // Create some sort of exit branch?
     }
 
     void Codegen::visit(NumberAST *node)
@@ -51,8 +95,8 @@ namespace Compiler {
         Value *val = namedValues[node->toString()];
         if (!val)
             logErrorV("Unknown variable name");
-        retVal = val;
-
+        // Load the value from memory
+        retVal = builder.CreateLoad(val, node->toString());
     }
 
     void Codegen::visit(ArrayAST *node)
@@ -62,7 +106,35 @@ namespace Compiler {
 
     void Codegen::visit(AssignmentAST *node)
     {
+        // Generate Value* for RHS
+        node->getRhs()->accept(this);
+        Value *val = retVal;
+        if (!val) {
+            logErrorV("There must be an expression on RHS.");
+            retVal = nullptr;
+            return;
+        }
 
+        // Look up name
+        node->getName()->accept(&nameGetter);
+        std::string name = nameGetter.getLastName();
+        Value *var = namedValues[name];
+        // If var cannot be found, define.  If it can, redefine.
+        if (!var) {
+            // Add new variables to values table
+            // Get parent function/scope
+            Function *parentFunc = builder.GetInsertBlock()->getParent();
+            // Create alloca for variable
+            AllocaInst *alloca = CreateEntryBlockAlloca(parentFunc, name);
+            // Store and place in name table
+            builder.CreateStore(val, alloca);
+            namedValues[name] = alloca;
+        } else {
+            // store in memory
+            builder.CreateStore(val, var);
+        }
+        // allocation expression evaluates to the RHS value
+        retVal = val;
     }
 
     void Codegen::visit(FuncCallAST *node)
@@ -188,12 +260,11 @@ namespace Compiler {
         }
         // In LLVM IR all basic blocks must be terminated with a branch/return.  All control flow must be explicit
         builder.CreateBr(mergeBlock);
-        // Set up Phi block TODO(JAMES) UNDERSTAND THIS!
+
         thenBlock = builder.GetInsertBlock();
 
-
         // Emit else block
-        // TODO(James) optional else??
+        // If there is no else block, do not add anything to PHI node
         auto elseTree = node->getElse();
         Value *elseVal;
         parentFunc->getBasicBlockList().push_back(elseBlock);
@@ -236,9 +307,16 @@ namespace Compiler {
             return;
         }
 
-        // Set up basic block for loop body
+        // Set up basic blocks for loop
         Function *parentFunc = builder.GetInsertBlock()->getParent();
-        BasicBlock *preheaderBlock = builder.GetInsertBlock();
+
+        // Create alloca for variable in entry block
+        AllocaInst *alloca = CreateEntryBlockAlloca(parentFunc, node->getVarName());
+
+        // Store start value in alloca
+        builder.CreateStore(startVal, alloca);
+
+        //BasicBlock *preheaderBlock = builder.GetInsertBlock();
         BasicBlock *loopBlock = BasicBlock::Create(context, "loop", parentFunc);
 
         // finish with explicit fall through to loop block
@@ -247,14 +325,9 @@ namespace Compiler {
         // Begin insertion into loop block
         builder.SetInsertPoint(loopBlock);
 
-        // Start PHI node with entry for start value
-        PHINode *var = builder.CreatePHI(Type::getDoubleTy(context), 2, node->getVarName());
-        var->addIncoming(startVal, preheaderBlock);
-
         // Emit code for loop body
-        // Use phi node for the loop variable.  save it so it can be restored
-        Value *oldLoopVarVal = namedValues[node->getVarName()];
-        namedValues[node->getVarName()] = var;
+        AllocaInst *oldLoopVarVal = namedValues[node->getVarName()];
+        namedValues[node->getVarName()] = alloca;
 
         // Emit code for loop body
         node->getBody()->accept(this);
@@ -280,8 +353,10 @@ namespace Compiler {
             // If not specified, use 1.0
             stepVal = ConstantFP::get(context, APFloat(1.0));
         }
-        // Value of loop variable on next iteration
-        Value *nextVar = builder.CreateFAdd(var, stepVal, "nextvar");
+        // Reload increment and restore alloca. handles case where loop body modifies the variable
+        Value *curVar = builder.CreateLoad(alloca, node->getVarName());
+        Value *nextVar = builder.CreateFAdd(curVar, stepVal, "nextvar");
+        builder.CreateStore(nextVar, alloca);
 
         // End condition
         node->getEnd()->accept(this);
@@ -296,7 +371,6 @@ namespace Compiler {
         endCondition = builder.CreateFCmpONE(endCondition, ConstantFP::get(context, APFloat(0.0)), "loopcond");
 
         // Create post loop block and insert
-        BasicBlock *loopEndBlock = builder.GetInsertBlock();
         BasicBlock *afterBlock = BasicBlock::Create(context, "afterloop", parentFunc);
 
         // Insert conditional into end of block
@@ -304,10 +378,6 @@ namespace Compiler {
 
         // Insert any new code in the post loop block
         builder.SetInsertPoint(afterBlock);
-
-        // Create exit block - decide to loop again or continue based on PHI node
-        // update PHI
-        var->addIncoming(nextVar, loopEndBlock);
 
         // Restore unshadowed variable
         if (oldLoopVarVal)
@@ -362,8 +432,14 @@ namespace Compiler {
 
         // Record function args in the named values (new scope)
         namedValues.clear();
-        for (auto &arg : thisFunc->args())
-            namedValues[arg.getName()] = &arg;
+        for (auto &arg : thisFunc->args()){
+            // Create alloca for variable
+            AllocaInst *alloca = CreateEntryBlockAlloca(thisFunc, arg.getName());
+            // Store initial value in alloca
+            builder.CreateStore(&arg, alloca);
+            // add arguments to symbol table
+            namedValues[arg.getName()] = alloca;
+        }
 
         // Finish function
         node->getBod()->accept(this);
@@ -380,10 +456,18 @@ namespace Compiler {
         verifyFunction(*thisFunc);
 
         // Optimise function
-        //fpm->run(*thisFunc);
+        fpm->run(*thisFunc);
         thisFunc->viewCFG();
 
         retFunc = thisFunc;
+    }
+
+    AllocaInst *Codegen::CreateEntryBlockAlloca(Function *func, const std::string &varName)
+    {
+        // Create temporary builder pointing to the entry of the function, then create an alloca with the correct name
+        // and return
+        IRBuilder<> tempBuilder(&func->getEntryBlock(), func->getEntryBlock().begin());
+        return tempBuilder.CreateAlloca(Type::getDoubleTy(context), 0, varName);
     }
 
 } // namespace Compiler
