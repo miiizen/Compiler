@@ -1,24 +1,26 @@
 #include "codegen.h"
 #include "AST.h"
 #include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
-#include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Host.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Target/TargetMachine.h"
-#include "llvm/Transforms/InstCombine/InstCombine.h"
-#include "llvm/Transforms/Scalar.h"
-#include "llvm/Transforms/Scalar/GVN.h"
-#include "llvm/Transforms/Utils.h"
+#include "llvm/Target/TargetOptions.h"
 #include <map>
 
 namespace Compiler {
@@ -168,7 +170,7 @@ namespace Compiler {
 
     void Codegen::visit(BinaryOpAST *node)
     {
-        // Get lhs and rhs somehow?!?!?!
+        // Get lhs and rhs
         node->getLhs()->accept(this);
         Value *lhs = retVal;
         node->getRhs()->accept(this);
@@ -180,6 +182,7 @@ namespace Compiler {
         Value *val;
 
         switch (node->getOp()) {
+            /* ---- Arithmetic ---- */
             case PLUS:
                 val = builder.CreateFAdd(lhs, rhs, "addtmp");
                 retVal = val;
@@ -196,6 +199,13 @@ namespace Compiler {
                 val = builder.CreateFDiv(lhs, rhs, "divtmp");
                 retVal = val;
                 break;
+            //TODO(James) powers?
+            case MOD:
+                // Signed??
+                val = builder.CreateSRem(lhs, rhs, "remtmp");
+                retVal = val;
+                break;
+            /* ---- Comparison ---- */
             case LESS:
                 // Returns 1 bit int
                 lhs = builder.CreateFCmpULT(lhs, rhs, "cmptmp");
@@ -203,8 +213,33 @@ namespace Compiler {
                 val = builder.CreateUIToFP(lhs, Type::getDoubleTy(context));
                 retVal = val;
                 break;
-
-                //TODO(James) implement all binary operators
+            case GREATER:
+                lhs = builder.CreateFCmpUGT(lhs, rhs, "cmptmp");
+                val = builder.CreateUIToFP(lhs, Type::getDoubleTy(context));
+                retVal = val;
+                break;
+            case EQ:
+                lhs = builder.CreateFCmpUEQ(lhs, rhs, "cmptmp");
+                val = builder.CreateUIToFP(lhs, Type::getDoubleTy(context));
+                retVal = val;
+                break;
+            case NEQ:
+                lhs = builder.CreateFCmpUNE(lhs, rhs, "cmptmp");
+                val = builder.CreateUIToFP(lhs, Type::getDoubleTy(context));
+                retVal = val;
+                break;
+            case GREQ:
+                lhs = builder.CreateFCmpUGE(lhs, rhs, "cmptmp");
+                val = builder.CreateUIToFP(lhs, Type::getDoubleTy(context));
+                retVal = val;
+                break;
+            case LEQ:
+                lhs = builder.CreateFCmpULE(lhs, rhs, "cmptmp");
+                val = builder.CreateUIToFP(lhs, Type::getDoubleTy(context));
+                retVal = val;
+                break;
+            /* ---- Logical ---- */
+            //TODO(James) implement all binary operators
             default:
                 logErrorV("Invalid binary operator");
                 retVal = nullptr;
@@ -215,12 +250,40 @@ namespace Compiler {
 
     void Codegen::visit(UnaryOpAST *node)
     {
+        // Get operand
+        node->getOperand()->accept(this);
+        Value *operand = retVal;
+
+        if (!operand)
+            logErrorV("Missing the operand for the unary operator");
+
+        Value *val;
+        // One for incrementing and decrementing
+        Value *one = ConstantFP::get(context, APFloat(1.0));
+
+
+        switch (node->getOp()) {
+            /* ---- Arithmetic ---- */
+            case INC:
+                val = builder.CreateFAdd(operand, one);
+                retVal = val;
+                break;
+            case DEC:
+                val = builder.CreateFSub(operand, one);
+                retVal = val;
+                break;
+
+            default:
+                logErrorV("Invalid unary operator");
+                retVal = nullptr;
+                break;
+        }
 
     }
 
     void Codegen::visit(TernaryOpAST *node)
     {
-
+        // TODO(James) Same as If/else but with single expressions?
     }
 
     void Codegen::visit(IfAST *node)
@@ -468,6 +531,64 @@ namespace Compiler {
         // and return
         IRBuilder<> tempBuilder(&func->getEntryBlock(), func->getEntryBlock().begin());
         return tempBuilder.CreateAlloca(Type::getDoubleTy(context), 0, varName);
+    }
+
+    int Codegen::emitObjCode(std::string filename)
+    {
+        // Initialise all targets
+        InitializeAllTargetInfos();
+        InitializeAllTargets();
+        InitializeAllTargetMCs();
+        InitializeAllAsmParsers();
+        InitializeAllAsmPrinters();
+
+        // Set target triple
+        auto targetTriple = sys::getDefaultTargetTriple();
+        module->setTargetTriple(targetTriple);
+
+        std::string error;
+        auto target = TargetRegistry::lookupTarget(targetTriple, error);
+
+        // Print error and exit if requested target couldn't be found
+        if (!target) {
+            errs() << error;
+            return 1;
+        }
+        // Basic generic CPU
+        auto CPU = "generic";
+        auto Features = "";
+
+        TargetOptions opt;
+        auto RM = Optional<Reloc::Model>();
+        auto targetMachine = target->createTargetMachine(targetTriple, CPU, Features, opt, RM);
+
+        // Configure the module for optimization
+        module->setDataLayout(targetMachine->createDataLayout());
+
+        // Emit object code
+        std::error_code ec;
+        raw_fd_ostream dest(filename, ec, sys::fs::F_None);
+
+        if (ec) {
+            errs() << "Could not open file: " << ec.message();
+            return 1;
+        }
+        // Pass emits object code
+        legacy::PassManager pass;
+        auto fileType = TargetMachine::CGFT_ObjectFile;
+
+        if (targetMachine->addPassesToEmitFile(pass, dest, nullptr, fileType)) {
+            errs() << "TargetMachine can't emit a file of this type";
+            return 1;
+        }
+
+        pass.run(*module);
+        dest.flush();
+
+        outs() << "Wrote " << filename << "\n";
+
+        return 0;
+
     }
 
 } // namespace Compiler

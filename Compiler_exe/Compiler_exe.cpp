@@ -32,7 +32,7 @@ int main()
      *   ENDDEF
      * END
      * BEGIN DEFINE f() FOR i = 0, i < 4, 2 IN i + 3 ENDFOR ENDDEF END */
-    std::string code = "BEGIN DEFINE f(a, b) i = a + b i + 8 ENDDEF END";
+    std::string code = "BEGIN DEFINE average(a, b) (a + b) * 0.5 ENDDEF END";
 	std::cout << code << std::endl << std::endl;
 	Parser myParser = Parser(code);
 
@@ -86,7 +86,7 @@ int main()
 
 	tree->accept(&generator);
 
-	auto mod = generator.getMod();
+	auto mod = generator.emitObjCode("out.o");
 
 
     std::cout << "made it lol" << std::endl;

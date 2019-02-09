@@ -86,7 +86,7 @@ namespace Compiler{
             fpm->doInitialization();
         }
 
-        unique_ptr<Module> getMod() { return std::move(module); };
+        int emitObjCode(std::string filename);
 
         Value *logErrorV(const char *str);
         void visit(BlockAST* node) override;

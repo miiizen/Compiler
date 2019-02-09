@@ -305,20 +305,6 @@ namespace Compiler {
 		return blk;
 	}
 
-	std::unique_ptr<AST> Parser::defStmt()
-	{
-//		// DEFINE name(arg1, arg2)
-//		// Expect define keyword
-//		expect(DEFINE);
-//
-//		// get prototype name
-//		unique_ptr<AST> name = parseExpression();
-//
-//
-//		return unique_ptr<AST>();
-	}
-
-
 	unique_ptr<AST> Parser::ifStmt()
 	{
 		// expect IF
