@@ -32,7 +32,7 @@ int main()
      *   ENDDEF
      * END
      * BEGIN DEFINE f() FOR i = 0, i < 4, 2 IN i + 3 ENDFOR ENDDEF END */
-    std::string code = "BEGIN DEFINE average(a, b) (a + b) * 0.5 ENDDEF END";
+    std::string code = "BEGIN DEFINE average(a, b) (a + b) * 0.5 ENDDEF DEFINE main() average(5, 6) ENDDEF END";
 	std::cout << code << std::endl << std::endl;
 	Parser myParser = Parser(code);
 
