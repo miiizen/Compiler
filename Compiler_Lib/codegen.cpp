@@ -25,7 +25,6 @@
 
 namespace Compiler {
 
-
     Value *Codegen::logErrorV(const char *str)
     {
         fprintf(stderr, "Error: %s\n", str);
@@ -258,8 +257,9 @@ namespace Compiler {
             logErrorV("Missing the operand for the unary operator");
 
         Value *val;
-        // One for incrementing and decrementing
+        // One, zero for incrementing and decrementing
         Value *one = ConstantFP::get(context, APFloat(1.0));
+        Value *zero = ConstantFP::get(context, APFloat(0.0));
 
 
         switch (node->getOp()) {
@@ -270,6 +270,10 @@ namespace Compiler {
                 break;
             case DEC:
                 val = builder.CreateFSub(operand, one);
+                retVal = val;
+                break;
+            case MINUS:
+                val = builder.CreateFSub(zero, operand);
                 retVal = val;
                 break;
 
@@ -461,7 +465,6 @@ namespace Compiler {
         node->getName()->accept(&nameGetter);
         std::string name = nameGetter.getLastName();
 
-        // NO PROTOTYPES!
         // All types are doubles for now
         std::vector<Type*> doubles(args.size(), Type::getDoubleTy(context));
 
@@ -470,17 +473,21 @@ namespace Compiler {
         // not sure about external linkage - however does mean it is callable outside of current module
         Function *func = Function::Create(ft, Function::ExternalLinkage, name, module.get());
 
-        // Set names of args to those in code - not necessary and doesn't work!
+        // Set names of args to those in code
         unsigned i = 0;
         for (auto &arg : func->args()) {
             args[i++]->accept(&nameGetter);
             std::string argName = nameGetter.getLastName();
             arg.setName(argName);
         }
-        // return IR
-        //retFunc = func;
+        // If the function was an external definition, return here.
+        if (node->isExt()) {
+            retFunc = func;
+            return;
+        }
 
-        // ---- FUNCTION ----
+
+        // ---- FUNCTION WITH BODY ----
         Function *thisFunc = module->getFunction(name);
         if (!thisFunc)
             logErrorV("Function genration failed.");
@@ -520,7 +527,7 @@ namespace Compiler {
 
         // Optimise function
         fpm->run(*thisFunc);
-        thisFunc->viewCFG();
+        //thisFunc->viewCFG();
 
         retFunc = thisFunc;
     }

@@ -1,5 +1,8 @@
 #include <memory>
-#include <codegen.h>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <unistd.h>
 #include "../Compiler_Lib/scanner.h"
 #include "../Compiler_Lib/token.h"
 #include "../Compiler_Lib/parser.h"
@@ -9,7 +12,15 @@
 
 using namespace Compiler;
 
-int main()
+std::string getInpFile(std::string path) {
+	std::ifstream str;
+	str.open(path);
+	std::stringstream buffer;
+	buffer << str.rdbuf();
+	return buffer.str();
+}
+
+int main(int argc, char *argv[])
 {
     /* IF TEST:
      * BEGIN
@@ -32,8 +43,34 @@ int main()
      *   ENDDEF
      * END
      * BEGIN DEFINE f() FOR i = 0, i < 4, 2 IN i + 3 ENDFOR ENDDEF END */
-    std::string code = "BEGIN DEFINE average(a, b) (a + b) * 0.5 ENDDEF DEFINE main() average(5, 6) ENDDEF END";
-	std::cout << code << std::endl << std::endl;
+
+    /*if (argc >= 2) {
+		std::cout << "Usage: " << argv[0] << " source.file [-o out.o]" << std::endl;
+		exit(EXIT_FAILURE);
+	}*/
+
+	std::string code;
+	std::string outName = "out.o";
+
+    int c;
+    while((c = getopt (argc, argv, "o:")) != -1) {
+    	switch (c) {
+    		case 'o':
+    			outName = optarg;
+    			std::cout << "output file: " << outName << std::endl;
+    			break;
+    		default:
+				std::cout << "Usage: " << argv[0] << " source.file [-o out.o]" << std::endl;
+				exit(EXIT_FAILURE);
+		}
+    }
+
+    for (int i = optind; i < argc; i++) {
+		code = getInpFile(argv[i]);
+		std::cout << "file: " << argv[i] << std::endl;
+    }
+
+	std::cout << code << std::endl;
 	Parser myParser = Parser(code);
 
 	// Set up grammar
@@ -86,10 +123,8 @@ int main()
 
 	tree->accept(&generator);
 
-	auto mod = generator.emitObjCode("out.o");
-
-
-    std::cout << "made it lol" << std::endl;
+	auto mod = generator.emitObjCode(outName);
 	
 	return 0;
 }
+

@@ -31,10 +31,13 @@ namespace Compiler {
 	/*		Function definition		*/
 	std::unique_ptr<AST> FunctionParser::parse(Parser *parser, const Token &tok)
 	{
-		// DEFINE f(a, b, c)
+		// DEFINE [EXT] f(a, b, c)
 		//    ...
 		// ENDDEF
 		// Already consumed DEFINE
+
+		// Check to see if function is extern
+		bool ext = parser->match(EXT);
 
 		// get name
 		unique_ptr<AST> name = parser->parseExpression(DEFINITON);
@@ -55,14 +58,20 @@ namespace Compiler {
 			parser->expect(RIGHTPAREN);
 		}
 
-		unique_ptr<AST> body = parser->block();
-		if (!body) {
-			parser->error("Function definition expects a body!");
+		// Expect a function body if the definition is not external
+		// Body is null for an extern
+		unique_ptr<AST> body(nullptr);
+
+		if (!ext) {
+			body = parser->block();
+			if (!body) {
+				parser->error("Function definition expects a body!");
+			}
+			parser->expect(ENDDEF);
 		}
+		// For an external definition, there is no block to close, so no ENDDEF
 
-		parser->expect(ENDDEF);
-
-		return std::make_unique<FuncDefAST>(std::move(name), std::move(args), std::move(body));
+		return std::make_unique<FuncDefAST>(std::move(name), ext, std::move(args), std::move(body));
 	}
 
 	/*		PrefixOperator		*/
@@ -329,7 +338,7 @@ namespace Compiler {
 			elseBlock = block();
 		}
 
-		match(ENDIF);
+		expect(ENDIF);
 
 		unique_ptr<IfAST> ifst = std::make_unique<IfAST>(std::move(cond), std::move(thenBlock), std::move(elseBlock));
 

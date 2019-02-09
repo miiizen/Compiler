@@ -24,7 +24,8 @@
 #include "llvm/Transforms/Utils.h"
 #include <map>
 
-namespace Compiler{
+
+namespace Compiler {
     using std::unique_ptr;
     using std::shared_ptr;
     using namespace llvm;

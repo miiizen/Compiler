@@ -24,7 +24,7 @@ namespace Compiler {
 		}
 
 		// Eat whitespace
-		if (isspace(lookChar) != 0) {
+		while (isspace(lookChar) != 0) {
 			nextChar();
 		}
 
@@ -80,6 +80,10 @@ namespace Compiler {
 
 			else if (identStr == "ENDDEF") {
 				tokQueue.emplace_back( ENDDEF, identStr );
+			}
+
+			else if (identStr == "EXT") {
+				tokQueue.emplace_back( EXT, identStr );
 			}
 
 			// just an identifier

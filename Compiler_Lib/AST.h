@@ -242,14 +242,16 @@ namespace Compiler {
 		ASTType type = ASTType::FUNCDEF;
 		std::unique_ptr<AST> name, body;
 		std::vector<std::shared_ptr<AST>> args;
+		bool isExternal;
 	public:
-		FuncDefAST(std::unique_ptr<AST> name, std::vector<std::shared_ptr<AST>> args, unique_ptr<AST> body)
-		: name(std::move(name)), args(std::move(args)), body(std::move(body)) {}
+		FuncDefAST(std::unique_ptr<AST> name, bool isExternal, std::vector<std::shared_ptr<AST>> args, unique_ptr<AST> body)
+		: name(std::move(name)), isExternal(isExternal), args(std::move(args)), body(std::move(body)) {}
 		const ASTType getType() override { return type; };
 
         std::unique_ptr<AST> getName() { return std::move(name); };
         std::unique_ptr<AST> getBod() { return std::move(body); };
         std::vector<shared_ptr<AST>> getArgs() { return args; };
+        bool isExt() { return isExternal; };
 
         // Visitor hook
 		void accept(Visitor *v) override;
