@@ -13,6 +13,7 @@
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
+#include "llvm/IRReader/IRReader.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Host.h"
@@ -21,6 +22,7 @@
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
+#include "llvm/Linker/Linker.h"
 #include <map>
 
 namespace Compiler {
@@ -535,7 +537,7 @@ namespace Compiler {
 
         // Optimise function
         fpm->run(*thisFunc);
-        thisFunc->viewCFG();
+        //thisFunc->viewCFG();
 
         retFunc = thisFunc;
     }
@@ -547,6 +549,14 @@ namespace Compiler {
         IRBuilder<> tempBuilder(&func->getEntryBlock(), func->getEntryBlock().begin());
         return tempBuilder.CreateAlloca(Type::getDoubleTy(context), 0, varName);
     }
+
+    /*int Codegen::linkSTL() {
+        SMDiagnostic error;
+        unique_ptr<Module> m(parseIRFile("../../Compiler_Lib/stl.ll", error, context));
+        if (m) {
+            Linker::linkModules(*module, std::move(m));
+        }
+    }*/
 
     int Codegen::emitObjCode(std::string filename)
     {

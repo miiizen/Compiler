@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <unistd.h>
+#include <stdlib.h>
 #include "../Compiler_Lib/scanner.h"
 #include "../Compiler_Lib/token.h"
 #include "../Compiler_Lib/parser.h"
@@ -30,6 +31,22 @@ std::string getInpFile(const std::string &path) {
         std::cout << "Unable to open file '" << path << "'" << std::endl;
         exit(EXIT_FAILURE);
 	}
+}
+
+// This is awful
+int linkSTL(Config config) {
+    // First write stl source
+    std::string stlSrc = "#include <stdio.h>\n"
+                         "extern double putchard(double X){fputc((char)X,stderr);return 0;}\n"
+                         "extern double printd(double X){fprintf(stderr,\"%f\\n\",X);return 0;}";
+    std::ofstream outfile("stl.c");
+    outfile << stlSrc << std::endl;
+    outfile.close();
+
+    std::string cmd = "cc " + config.outName + " stl.c -no-pie";
+    int res = system(cmd.c_str());
+    remove("stl.c");
+    return res;
 }
 
 // Run compiler
@@ -87,7 +104,9 @@ int run(Config config) {
 
     tree->accept(&generator);
 
-    return generator.emitObjCode(config.outName);
+    generator.emitObjCode(config.outName);
+
+    return linkSTL(config);
 }
 
 // Collect arguments and run
