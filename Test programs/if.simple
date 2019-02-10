@@ -1,0 +1,10 @@
+#IF TEST:
+BEGIN
+    DEFINE f(a, b)
+        IF a<b THEN
+            9+2
+        ELSE
+            9-2
+        ENDIF
+    ENDDEF
+END

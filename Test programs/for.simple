@@ -1,0 +1,8 @@
+# FOR TEST
+BEGIN
+    DEFINE f()
+        FOR i = 0, i < 4, 2 IN
+            i + 3
+        ENDFOR
+    ENDDEF
+END

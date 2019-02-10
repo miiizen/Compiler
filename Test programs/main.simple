@@ -1,0 +1,10 @@
+# Test main loop
+BEGIN
+    DEFINE average(x, y)
+        (x + y) * 0.5
+    ENDDEF
+
+    DEFINE main()
+        average(5, 8)
+    ENDDEF
+END
