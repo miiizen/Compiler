@@ -51,7 +51,6 @@ namespace Compiler {
 
 	void Visualizer::visit(ArrayAST* node)
 	{
-		//TODO(James)
 	}
 
 	void Visualizer::visit(AssignmentAST* node)
@@ -63,7 +62,6 @@ namespace Compiler {
 
 	void Visualizer::visit(FuncCallAST* node)
 	{
-		//TODO(James)
 	}
 
 	void Visualizer::visit(BinaryOpAST* node)

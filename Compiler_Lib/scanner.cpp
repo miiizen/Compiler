@@ -222,7 +222,6 @@ namespace Compiler {
 	/* Methods */
 	char Scanner::nextChar() {
 		try {
-			// TODO(James): BAD BAD BAD EOL REALLY NEEDS SORTING OUT
 			if (pos > (_inp.length() - 1)) {
 				lookChar = ';';
 				// Infinite loops rip
@@ -244,7 +243,6 @@ namespace Compiler {
 	char Scanner::peekChar() {
 		try {
 			if (pos > _inp.length() - 1) {
-				// TODO(James): BAD BAD BAD THIS FEELS WRONG
 				// If we have reached the end of the input without encountering a semi colon return one anyway?
 				return ';';
 				// This was causing infinite loops.

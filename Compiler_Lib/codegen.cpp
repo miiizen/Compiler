@@ -34,7 +34,6 @@ namespace Compiler {
     void Codegen::visit(BlockAST *node)
     {
         // Recursively generate code for children
-        // TODO(JAMES) Return values from multiple statements? make whole block and return.
         // Append BasicBlocks to function blocklist.  The blocks MUST end with a branch to the next block
         // REMEMBER: ALL BASIC BLOCKS MUST BE TERMINATED WITH A RETURN OR BRANCH! The LLVM verifier will fail otherwise
         // Also, create the blocks you think you'll need early on!
@@ -152,8 +151,10 @@ namespace Compiler {
 
         // Check number of args passed
         std::vector<shared_ptr<AST>> args = node->getArgs();
-        if (calleeFunc->arg_size() != args.size())
-            logErrorV("Incorrect number of arguments passed");//TODO(James) more descriptive error message
+        if (calleeFunc->arg_size() != args.size()){
+            std::string err = "Expected " + std::to_string(calleeFunc->arg_size()) + "arguments to function " + name + ", instead got " + std::to_string(args.size()) + ".";
+            logErrorV(err.c_str());
+        }
 
         // Recursively generate code for each argument
         std::vector<Value *> argValues;
@@ -347,7 +348,6 @@ namespace Compiler {
 
         }
         builder.CreateBr(mergeBlock);
-        // codegen of else can change current block update for phi TODO(JAMES) UNDERSTAND
         elseBlock = builder.GetInsertBlock();
 
         // Emit merge code
@@ -489,12 +489,19 @@ namespace Compiler {
 
         // ---- FUNCTION WITH BODY ----
         Function *thisFunc = module->getFunction(name);
-        if (!thisFunc)
-            logErrorV("Function genration failed.");
-        //TODO(exit???)
+        if (!thisFunc) {
+            std::string err = "Could not find function definition for " + name + ".";
+            logErrorV(err.c_str());
+            retFunc = nullptr;
+            return;
+        }
 
-        if(!thisFunc->empty())
-            logErrorV("Function definition already found");
+        if(!thisFunc->empty()) {
+            std::string err = "Definition of function " + name  + " already exists.";
+            logErrorV(err.c_str());
+            retFunc = nullptr;
+            return;
+        }
 
         // Create new basic block
         BasicBlock *base = BasicBlock::Create(context, "entry", thisFunc);
@@ -516,13 +523,15 @@ namespace Compiler {
         Value* returnVal = retVal;
         // No body
         if(!returnVal) {
+            std::string err = "No body found for definition of non-external function " + name + ".";
+            logErrorV(err.c_str());
             thisFunc->eraseFromParent();
             retFunc = nullptr;
         }
 
         builder.CreateRet(returnVal);
 
-        // Validate code
+        // Validate code - Important, LLVM can pick up lots of useful errors here.
         verifyFunction(*thisFunc);
 
         // Optimise function

@@ -205,7 +205,6 @@ namespace Compiler {
 		std::unique_ptr<AST> parseExpression(int precedence = 0);
 
 		// Return an error
-		// TODO(James): hide this.  make parselets friends?
 		void error(std::string message);
 
 	private:
