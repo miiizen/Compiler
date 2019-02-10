@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
     for (int i = optind; i < argc; i++) {
 		config.code = getInpFile(argv[i]);
-		std::cout << "file: " << argv[i] << std::endl;
+		std::cout << "input file: " << argv[i] << std::endl;
     }
 
     if (config.code.empty()) {

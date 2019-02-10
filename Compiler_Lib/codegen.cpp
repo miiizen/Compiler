@@ -201,8 +201,7 @@ namespace Compiler {
                 break;
             //TODO(James) powers?
             case MOD:
-                // Signed??
-                val = builder.CreateSRem(lhs, rhs, "remtmp");
+                val = builder.CreateFRem(lhs, rhs, "remtmp");
                 retVal = val;
                 break;
             /* ---- Comparison ---- */
@@ -536,7 +535,7 @@ namespace Compiler {
 
         // Optimise function
         fpm->run(*thisFunc);
-        //thisFunc->viewCFG();
+        thisFunc->viewCFG();
 
         retFunc = thisFunc;
     }

@@ -14,18 +14,24 @@ namespace Compiler {
 		Token curTok;
 		nextChar();
 
+		// Eat whitespace
+		while (isspace(lookChar) != 0) {
+			nextChar();
+		}
+
 		// skip comment
 		if (lookChar == '#') {
 			// Skip until EOL
 			do {
 				nextChar();
 			} while (lookChar != '\n');
+			// Eat \n
 			nextChar();
-		}
 
-		// Eat whitespace
-		while (isspace(lookChar) != 0) {
-			nextChar();
+			// Eat whitespace again
+			while (isspace(lookChar) != 0) {
+				nextChar();
+			}
 		}
 
 		// Numbers
@@ -187,15 +193,17 @@ namespace Compiler {
 			tokQueue.emplace_back( COLON, ":" );
 		}
 
-		// End of input
-		else if (lookChar == ';') {
-			tokQueue.emplace_back( END, ");" );
-		}
-
 		// Otherwise
 		else {
 			error("Unexpected " + std::string(1, lookChar) + " in input");
 		}
+
+
+		// End of input
+		if (lookChar == ';') {
+			tokQueue.emplace_back( END, ");" );
+		}
+
 
 		// Return value just added to the queue
 		return tokQueue.back();
@@ -213,8 +221,10 @@ namespace Compiler {
 
 	// Get and return the next n tokens
 	Token Scanner::lookAhead(int distance) {
-		for (int i = -1; i < distance; i++) {
-			getNextToken();
+		if (tokQueue.empty() || distance > 0) {
+			for (int i = -1; i < distance; i++) {
+				getNextToken();
+			}
 		}
 		return tokQueue.at(distance);
 	}
@@ -310,9 +320,10 @@ namespace Compiler {
 
 	void Scanner::skipWhite() {
 		char look{ peekChar() };
-		if (isWhite(look)) {
+		while (isWhite(look)) {
 			// Space found - eat it
 			nextChar();
+			look = peekChar();
 		}
 	}
 

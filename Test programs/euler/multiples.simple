@@ -1,0 +1,16 @@
+BEGIN
+    # Prints a double
+    DEFINE EXT printd(x)
+
+    DEFINE main()
+        total = 0
+        FOR i = 0, i < 1000 IN
+            IF (i % 5) == 0 THEN
+                IF (i % 3) == 0 THEN
+                    total = total + i
+                ENDIF
+            ENDIF
+        ENDFOR
+        printd(total)
+    ENDDEF
+END
