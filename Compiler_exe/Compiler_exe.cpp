@@ -17,6 +17,7 @@ using namespace Compiler;
 struct Config {
     std::string code;
     std::string outName = "out.o";
+    bool link = false;
 };
 
 // Read input file
@@ -43,7 +44,8 @@ int linkSTL(Config config) {
     outfile << stlSrc << std::endl;
     outfile.close();
 
-    std::string cmd = "cc " + config.outName + " stl.c -no-pie";
+    // cc: system c compiler.  stl.c: my baby standard library : -lm link libm containing floating point maths routines -no-pie
+    std::string cmd = "clang " + config.outName + " stl.c -lm -no-pie";
     int res = system(cmd.c_str());
     remove("stl.c");
     return res;
@@ -104,9 +106,20 @@ int run(Config config) {
 
     tree->accept(&generator);
 
-    generator.emitObjCode(config.outName);
+    int res = generator.emitObjCode(config.outName);
 
-    return linkSTL(config);
+    // Link if option is present
+    if (config.link)
+        return linkSTL(config);
+
+    return res;
+}
+
+void printHelp(char *argv[]) {
+    std::cout << "Usage: " << argv[0] << " [options] <input>" << std::endl;
+    std::cout << "Options:" << std::endl;
+    std::cout << "  -o <file>\tWrite output to <file>." << std::endl;
+    std::cout << "  -l\t\tLink the object file with the system C compiler and SIMPLE standard library." << std::endl;
 }
 
 // Collect arguments and run
@@ -115,25 +128,29 @@ int main(int argc, char *argv[])
     Config config = Config();
 
     int c;
-    while((c = getopt (argc, argv, "o:")) != -1) {
+    while((c = getopt (argc, argv, "hlo:")) != -1) {
     	switch (c) {
     		case 'o':
     			config.outName = optarg;
-    			std::cout << "output file: " << config.outName << std::endl;
     			break;
+    	    case 'l':
+    	        config.link = true;
+    	        break;
+    	    case 'h':
+    	        printHelp(argv);
+    	        exit(EXIT_SUCCESS);
     		default:
-				std::cout << "Usage: " << argv[0] << " source.simple [-o out.o]" << std::endl;
+                printHelp(argv);
 				exit(EXIT_FAILURE);
 		}
     }
 
     for (int i = optind; i < argc; i++) {
 		config.code = getInpFile(argv[i]);
-		std::cout << "input file: " << argv[i] << std::endl;
     }
 
     if (config.code.empty()) {
-        std::cout << "Usage: " << argv[0] << " source.simple [-o out.o]" << std::endl;
+        std::cout << argv[0] << ": error: no input files" << std::endl;
         exit(EXIT_FAILURE);
     }
 

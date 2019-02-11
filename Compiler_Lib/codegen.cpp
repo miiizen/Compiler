@@ -610,8 +610,6 @@ namespace Compiler {
         pass.run(*module);
         dest.flush();
 
-        outs() << "Wrote " << filename << "\n";
-
         return 0;
 
     }
