@@ -39,7 +39,7 @@ int linkSTL(Config config) {
     // First write stl source
     std::string stlSrc = "#include <stdio.h>\n"
                          "extern double putchard(double X){fputc((char)X,stderr);return 0;}\n"
-                         "extern double printd(double X){fprintf(stderr,\"%f\\n\",X);return 0;}";
+                         "extern double printd(double X){fprintf(stdout,\"%f\\n\",X);return 0;}";
     std::ofstream outfile("stl.c");
     outfile << stlSrc << std::endl;
     outfile.close();

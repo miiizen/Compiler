@@ -1,0 +1,9 @@
+#EXPECT:2
+BEGIN
+    DEFINE EXT printd(x)
+
+    DEFINE main()
+        i = 6 / 3
+        printd(i)
+    ENDDEF
+END

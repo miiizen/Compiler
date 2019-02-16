@@ -1,6 +1,6 @@
 # FOR TEST
 BEGIN
-    DEFINE f()
+    DEFINE main()
         FOR i = 0, i < 4, 2 IN
             i + 3
         ENDFOR

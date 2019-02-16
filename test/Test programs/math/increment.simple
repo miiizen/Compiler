@@ -1,0 +1,10 @@
+#EXPECT:11
+BEGIN
+    DEFINE EXT printd(x)
+
+    DEFINE main()
+        x = 10
+        y = 10++
+        printd(y)
+    ENDDEF
+END

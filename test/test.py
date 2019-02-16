@@ -20,15 +20,43 @@ def log(message, ok):
     else:
         print(outcolors.FAIL + "[ FAIL ]\t" + message + outcolors.ENDC)
 
+# Parse expected value from source file
+# Format #EXPECT:n
+# This format is mainly for clarity when reading
+def getExpectedOutput(path):
+    exp = ""
+    with open(path, "r") as f:
+        top = f.readline()
+        spl = top.split(':')
+        if(spl[0] == "#EXPECT"):
+            exp = spl[1].rstrip()
+    # If no #EXPECT, return a blank string
+    return exp
+
+# Call program and see if the output value was what was expected
+def testRun(path):
+    process = subprocess.Popen(["./a.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+
+    exp = getExpectedOutput(path)
+    stdout = stdout.decode("utf-8").rstrip()
+    if(stdout.startswith(exp)):
+        log("Output '" + stdout + "' was expected", True)
+    else:
+        log("Expected '" + exp + "' but got '" + stdout + "'", False)
+    print("")
+
 # Call program and print stderr or stdout depending on success/failure
-def test(path):
+def testCompile(path):
     process = subprocess.Popen(["./simple", path, "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     if stderr:
-        log(path + " did not compile: " + stderr.decode("utf-8"), False)
+        log("'" + path + "' did not compile: " + stderr.decode("utf-8"), False)
     else:
-        log(path + " compiled successfully", True)
-    #TODO(James) Read expected value and compare to stdout?
+        log("'" + path + "' compiled successfully", True)
+        testRun(path)
+
+
 
 def main():
     try:
@@ -48,7 +76,7 @@ def main():
             # Just test files with extension .simple
             if(f.split('.')[-1] == "simple"):
                 path = os.path.join(dirName, f)
-                test(path)
+                testCompile(path)
 
 
 if __name__ == "__main__":

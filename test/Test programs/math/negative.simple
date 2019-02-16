@@ -1,0 +1,10 @@
+#EXPECT:-10
+BEGIN
+    DEFINE EXT printd(x)
+
+    DEFINE main()
+        x = 10
+        y = -x
+        printd(y)
+    ENDDEF
+END
