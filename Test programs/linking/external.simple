@@ -1,7 +1,0 @@
-BEGIN
-    DEFINE EXT sin(x)
-
-    DEFINE calcSin(x)
-        sin(x)
-    ENDDEF
-END

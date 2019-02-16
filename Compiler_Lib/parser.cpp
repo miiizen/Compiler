@@ -256,7 +256,9 @@ namespace Compiler {
 		}
 		else {
 			//throw std::exception("Unrecognised token");
-			throw std::runtime_error("Unrecognised token");
+			//throw std::runtime_error("Unrecognised token");
+			std::cout << "Unrecognised token" << std::endl;
+			exit(EXIT_FAILURE);
 		}
 
 		// Get expression tree for the prefix
@@ -357,10 +359,9 @@ namespace Compiler {
 		expect(ASSIGN);
 
 		// Parse expression
-		// TODO(James): error checking perhaps?
 		unique_ptr<AST> start = parseExpression();
 		if (!start) {
-			error("There should be a start expression");
+			error("Expected a start expression in for loop");
 		}
 
 		// expect comma
@@ -369,7 +370,7 @@ namespace Compiler {
 		// Parse expression for end value
 		unique_ptr<AST> end = parseExpression();
 		if (!end) {
-			error("There should be an end expression");
+			error("Expected an end expression in for loop");
 		}
 
 		// Optional step value.
@@ -377,9 +378,8 @@ namespace Compiler {
 		if (_scanner.lookAhead(0).getType() == COMMA) {
 			expect(COMMA);
 			step = parseExpression();
-			// TODO(James): error checking perhaps?
 			if (!step) {
-				error("There should be a step!");
+				error("Expected a start expression after comma in for loop");
 			}
 		}
 
@@ -388,7 +388,7 @@ namespace Compiler {
 
 		unique_ptr<AST> body = block();
 		if (!body) {
-			error("There should be a body!");
+			error("Expected a body expression in for loop");
 		}
 
 		expect(ENDFOR);
@@ -411,8 +411,8 @@ namespace Compiler {
 
 	void Parser::error(std::string message)
 	{
-		std::cerr << "Scanner: " << message << std::endl;
-		throw message;
+		std::cerr << "Parser: " << message << std::endl;
+		exit(EXIT_FAILURE);
 	}
 
 }  // namespace Compiler

@@ -1,6 +1,8 @@
 #IF TEST:
 BEGIN
-    DEFINE f(a, b)
+    DEFINE main()
+        a = 5
+        b = 6
         IF a<b THEN
             9+2
         ELSE

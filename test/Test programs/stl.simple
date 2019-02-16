@@ -1,0 +1,10 @@
+BEGIN
+    # Prints a double
+    DEFINE EXT printd(x)
+    DEFINE EXT sin(x)
+
+    DEFINE main()
+        i = sin(4)
+        printd(i)
+    ENDDEF
+END

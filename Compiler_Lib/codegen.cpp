@@ -246,7 +246,6 @@ namespace Compiler {
                 retVal = nullptr;
                 break;
         }
-
     }
 
     void Codegen::visit(UnaryOpAST *node)
@@ -560,6 +559,7 @@ namespace Compiler {
 
     int Codegen::emitObjCode(std::string filename)
     {
+        filename = filename + ".o";
         // Initialise all targets
         InitializeAllTargetInfos();
         InitializeAllTargets();

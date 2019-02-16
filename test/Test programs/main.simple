@@ -1,10 +1,14 @@
 # Test main loop
 BEGIN
+    DEFINE EXT printd(x)
+
     DEFINE average(x, y)
+        x*2
         (x + y) * 0.5
     ENDDEF
 
     DEFINE main()
-        average(5, 8)
+        a = average(5, 8)
+        printd(a)
     ENDDEF
 END

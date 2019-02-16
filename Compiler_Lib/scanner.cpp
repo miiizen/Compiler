@@ -119,7 +119,7 @@ namespace Compiler {
 			}
 			else if (opStr == "^") {
 				tokQueue.emplace_back( HAT, "^" );
-			} 
+			}
 			else if (opStr == "++") {
 				tokQueue.emplace_back( INC, "++" );
 			}
@@ -284,7 +284,8 @@ namespace Compiler {
 		std::cerr << "Scanner: " << message << std::endl;
 		// Recover from error by skipping token and trying to resume
 		// Not sure how useful this really is, but we'll see
-		nextChar();
+		//nextChar();
+		exit(EXIT_FAILURE);
 	}
 
 	/* Recognisers */

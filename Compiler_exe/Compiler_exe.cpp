@@ -16,7 +16,7 @@ using namespace Compiler;
 // Structure to hold command line arguments
 struct Config {
     std::string code;
-    std::string outName = "out.o";
+    std::string outName = "out";
     bool link = false;
 };
 
@@ -45,7 +45,7 @@ int linkSTL(Config config) {
     outfile.close();
 
     // cc: system c compiler.  stl.c: my baby standard library : -lm link libm containing floating point maths routines -no-pie
-    std::string cmd = "clang " + config.outName + " stl.c -lm -no-pie";
+    std::string cmd = "clang " + config.outName + ".o stl.c -lm -no-pie";
     int res = system(cmd.c_str());
     remove("stl.c");
     return res;
