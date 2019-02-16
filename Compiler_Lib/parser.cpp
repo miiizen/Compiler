@@ -43,7 +43,7 @@ namespace Compiler {
 		unique_ptr<AST> name = parser->parseExpression(DEFINITON);
 		// Check name is a name
 		if (name->getType() != ASTType::NAME) {
-			parser->error("The left hand side of an assignment must be a name.");
+			parser->error("Function name must be of type name.");
 		}
 
 		parser->expect(LEFTPAREN);
@@ -144,6 +144,10 @@ namespace Compiler {
 	/*		Function call		*/
 	unique_ptr<AST> CallParser::parse(Parser * parser, unique_ptr<AST> left, const Token & tok)
 	{
+		// Check if lhs is a name
+		if (left->getType() != ASTType::NAME) {
+			parser->error("The left hand side of a function call must be a name");
+		}
 		// Parse comma separated values until )
 		std::vector<std::shared_ptr<AST>> args = {};
 
