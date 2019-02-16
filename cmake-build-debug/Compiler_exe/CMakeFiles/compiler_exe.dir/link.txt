@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/compiler_exe.dir/Compiler_exe.cpp.o  -o compiler_exe ../Compiler_Lib/libcompiler_lib.a /usr/lib/libLLVMIRReader.a /usr/lib/libLLVMAsmParser.a /usr/lib/libLLVMBitReader.a /usr/lib/libLLVMCore.a /usr/lib/libLLVMBinaryFormat.a /usr/lib/libLLVMSupport.a -lz -lrt -ldl -ltinfo -lpthread -lm /usr/lib/libLLVMDemangle.a 

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcompiler_lib.a  CMakeFiles/compiler_lib.dir/AST.cpp.o CMakeFiles/compiler_lib.dir/parser.cpp.o CMakeFiles/compiler_lib.dir/scanner.cpp.o CMakeFiles/compiler_lib.dir/token.cpp.o CMakeFiles/compiler_lib.dir/visualizer.cpp.o CMakeFiles/compiler_lib.dir/codegen.cpp.o
-/usr/bin/ranlib libcompiler_lib.a

@@ -1,9 +1,0 @@
-/home/james/CLionProjects/Compiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/james/CLionProjects/Compiler/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/james/CLionProjects/Compiler/cmake-build-debug/Compiler_Lib/CMakeFiles/rebuild_cache.dir
-/home/james/CLionProjects/Compiler/cmake-build-debug/Compiler_Lib/CMakeFiles/edit_cache.dir
-/home/james/CLionProjects/Compiler/cmake-build-debug/Compiler_Lib/CMakeFiles/intrinsics_gen.dir
-/home/james/CLionProjects/Compiler/cmake-build-debug/Compiler_Lib/CMakeFiles/compiler_lib.dir
-/home/james/CLionProjects/Compiler/cmake-build-debug/Compiler_exe/CMakeFiles/rebuild_cache.dir
-/home/james/CLionProjects/Compiler/cmake-build-debug/Compiler_exe/CMakeFiles/compiler_exe.dir
-/home/james/CLionProjects/Compiler/cmake-build-debug/Compiler_exe/CMakeFiles/edit_cache.dir
