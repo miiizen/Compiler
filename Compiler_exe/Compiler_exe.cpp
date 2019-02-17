@@ -45,7 +45,7 @@ int linkSTL(Config config) {
     outfile.close();
 
     // cc: system c compiler.  stl.c: my baby standard library : -lm link libm containing floating point maths routines -no-pie
-    std::string cmd = "clang " + config.outName + ".o stl.c -lm -no-pie";
+    std::string cmd = "c++ " + config.outName + ".o stl.c -lm -no-pie";
     int res = system(cmd.c_str());
     remove("stl.c");
     return res;
