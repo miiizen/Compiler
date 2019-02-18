@@ -2,7 +2,12 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#ifdef __linux__
 #include <unistd.h>
+#elif _WIN32
+#include <io.h>
+#include "getopt.h"
+#endif
 #include <stdlib.h>
 #include "../Compiler_Lib/scanner.h"
 #include "../Compiler_Lib/token.h"
