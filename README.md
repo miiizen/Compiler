@@ -11,7 +11,7 @@ Installing the LLVM libraries depends on the distro/package manager.
 #### Arch
 Install LLVM 7 (with libraries) with `sudo pacman -S llvm` or just libraries with `sudo pacman -S llvm-libs`.
 #### Debian/Ubuntu
-Follow the instructions at [http://apt.llvm.org/].
+Follow the instructions at http://apt.llvm.org/.
 Use `sudo add-apt-repository "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-7 main"` then `sudo apt install llvm-7` for LLVM 7 on Strtch for example.
 
 ## Building
