@@ -2,7 +2,7 @@
 Hopefully this will be a small compiler for a turing complete language
 
 ## Docs
-See the wiki for implementation notes and bits about the language
+See the wiki for implementation notes and bits about the language.  Example programs used for testing can be found [here](tests/Test%20programs)
 
 ## Installing LLVM Dependencies
 This is a pain
