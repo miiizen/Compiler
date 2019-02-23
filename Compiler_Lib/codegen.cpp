@@ -29,7 +29,10 @@ namespace Compiler {
 
     Value *Codegen::logErrorV(const char *str)
     {
-        fprintf(stderr, "Error: %s\n", str);
+        //fprintf(stderr, "Error: %s\n", str);
+        std::string err = "Code generation: ";
+        err.append(str);
+        throw std::runtime_error(err);
         return nullptr;
     }
 
@@ -95,8 +98,10 @@ namespace Compiler {
     {
         // Look variable up
         Value *val = namedValues[node->toString()];
-        if (!val)
-            logErrorV("Unknown variable name");
+        if (!val){
+            std::string errStr = "Unknown variable name '" + node->toString() + "'";
+            logErrorV(errStr.c_str());
+        }
         // Load the value from memory
         retVal = builder.CreateLoad(val, node->toString());
     }
@@ -154,7 +159,7 @@ namespace Compiler {
         // Check number of args passed
         std::vector<shared_ptr<AST>> args = node->getArgs();
         if (calleeFunc->arg_size() != args.size()){
-            std::string err = "Expected " + std::to_string(calleeFunc->arg_size()) + "arguments to function " + name + ", instead got " + std::to_string(args.size()) + ".";
+            std::string err = "Expected " + std::to_string(calleeFunc->arg_size()) + " arguments to function " + name + ", instead got " + std::to_string(args.size()) + ".";
             logErrorV(err.c_str());
         }
 
@@ -536,7 +541,7 @@ namespace Compiler {
 
         // Optimise function
         fpm->run(*thisFunc);
-        //thisFunc->viewCFG();
+        thisFunc->viewCFG();
 
         retFunc = thisFunc;
     }

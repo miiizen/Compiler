@@ -104,14 +104,22 @@ int run(Config config) {
     myParser.infixLeft(GREQ, RELATIONAL);
 
     // Parse program
-    std::shared_ptr<AST> tree = myParser.parse();
+    std::shared_ptr<AST> tree;
+    int res;
+    try {
+        tree = myParser.parse();
+        // Generate object code
+        Codegen generator;
 
-    // Generate object code
-    Codegen generator;
+        tree->accept(&generator);
 
-    tree->accept(&generator);
+        res = generator.emitObjCode(config.outName);
 
-    int res = generator.emitObjCode(config.outName);
+    } catch (std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
 
     // Link if option is present
     if (config.link)
