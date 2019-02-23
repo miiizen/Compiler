@@ -3,6 +3,7 @@ BEGIN
     DEFINE main()
         FOR i = 0, i < 4, 2 IN
             i + 3
+            7+4
         ENDFOR
     ENDDEF
 END

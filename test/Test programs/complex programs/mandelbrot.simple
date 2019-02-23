@@ -1,0 +1,49 @@
+BEGIN
+        DEFINE EXT putchard(x)
+
+        DEFINE printdensity(d)
+                IF d > 8 THEN
+                        putchard(32) # ' '
+                ELSE IF d > 4 THEN
+                        putchard(46) # '.'
+                ELSE IF d > 2 THEN
+                        putchard(43) # '+'
+                ELSE
+                        putchard(42) # '*'
+                ENDIF
+                ENDIF
+                ENDIF
+        ENDDEF
+
+	DEFINE mandelconverger(real, imag, iters, creal, cimag)
+		IF iters > 255 THEN
+			iters
+		ENDIF
+		IF (real*real + imag*imag > 4) THEN
+			iters
+		ELSE
+			mandelconverger(real*real - imag*imag + creal, 2*real*imag + cimag, iters+1, creal, cimag)
+		ENDIF
+	ENDDEF
+
+	DEFINE mandelconverge(real, imag)
+		mandelconverger(real, imag, 0, real, imag)
+	ENDDEF
+
+	DEFINE mandelhelp(xmin, xmax, xstep, ymin, ymax, ystep)
+		FOR y = ymin, y < ymax, ystep IN
+			FOR x = xmin, x< xmax, xstep IN
+				printdensity(mandelconverge(x, y))
+			ENDFOR
+			putchard(10)
+		ENDFOR
+	ENDDEF
+
+	DEFINE mandel(realstart, imagstart, realmag, imagmag)
+		mandelhelp(realstart, realstart+realmag*78, realmag, imagstart, imagstart+imagmag*40, imagmag)
+	ENDDEF
+
+	DEFINE main()
+		mandel(-2.3, -1.3, 0.05, 0.07)
+	ENDDEF
+END

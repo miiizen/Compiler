@@ -1,0 +1,20 @@
+BEGIN
+    DEFINE EXT putchard(x)
+
+    DEFINE add(a, b)
+        a + b
+    ENDDEF
+
+	DEFINE nestFor(xmin, xmax, xstep, ymin, ymax, ystep)
+		FOR y = ymin, y < ymax, ystep IN
+			FOR x = xmin, x< xmax, xstep IN
+				add(x, y)
+				putchard(10)
+			ENDFOR
+		ENDFOR
+	ENDDEF
+
+	DEFINE main()
+	    nestFor(0, 100, 2, 0, 100, 1)
+    ENDDEF
+END

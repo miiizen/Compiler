@@ -1,0 +1,7 @@
+#EXPECT:FAIL
+BEGIN
+    DEFINE main()
+        # scanning the number below should fail as it contains an alphabetic character
+        i = 5o00 + 300
+    ENDDEF
+END

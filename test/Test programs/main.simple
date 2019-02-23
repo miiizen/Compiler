@@ -3,7 +3,6 @@ BEGIN
     DEFINE EXT printd(x)
 
     DEFINE average(x, y)
-        x*2
         0.5 * (x + y)
     ENDDEF
 

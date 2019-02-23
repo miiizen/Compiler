@@ -1,0 +1,6 @@
+#EXPECT:FAIL
+BEGIN
+    DEFINE 3 (a, b)
+        0.5 * (a + b)
+    ENDDEF
+END

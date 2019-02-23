@@ -1,0 +1,6 @@
+#EXPECT:FAIL
+BEGIN
+    DEFINE main()
+        4 = 5
+    ENDDEF
+END

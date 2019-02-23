@@ -1,0 +1,6 @@
+#EXPECT:FAIL
+BEGIN
+    DEFINE EXT sin(x)
+        2+3
+    ENDDEF
+END

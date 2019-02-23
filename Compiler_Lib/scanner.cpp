@@ -234,7 +234,7 @@ namespace Compiler {
 		try {
 			if (pos > (_inp.length() - 1)) {
 				lookChar = ';';
-				// Infinite loops rip
+				// This causes infinite loops, so we just spoof an eol token which seems harmless currently
 				//error("nextChar: Reached end of input without terminator.");
 			}
 			else {
@@ -281,11 +281,12 @@ namespace Compiler {
 	}
 
 	void Scanner::error(std::string message) {
-		std::cerr << "Scanner: " << message << std::endl;
 		// Recover from error by skipping token and trying to resume
 		// Not sure how useful this really is, but we'll see
+		// The answer is: causes more problems than it solves.
+		// A language should have strict rules that the compiler enforces
 		//nextChar();
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Scanner: " + message);
 	}
 
 	/* Recognisers */

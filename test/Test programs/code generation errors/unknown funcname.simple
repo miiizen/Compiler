@@ -1,0 +1,6 @@
+#EXPECT:FAIL
+BEGIN
+    DEFINE main()
+        average(6, 7)
+    ENDDEF
+END

@@ -168,12 +168,12 @@ namespace Compiler {
 
 		// Check if lhs is of type name
 		if (left->getType() == ASTType::NAME) {
-			parser->error("The left hand side must be a name.");
+			parser->error("The left hand side of an array index must be a name.");
 		}
 
 		// Check if rhs is of type number
 		if (left->getType() == ASTType::NUMBER) {
-			parser->error("The left hand side must be a number.");
+			parser->error("The left hand side of an array index must be a number.");
 		}
 
 		// TODO(James): FINISH ME PLEASE
@@ -239,9 +239,7 @@ namespace Compiler {
 	{
 		Token look = _scanner.lookAhead(0);
 		if (look.getType() != tok) {
-			// this does not work
-			//error("Expected " + tok);
-			error("Expected a different token");
+			error("Unexpected '" + look.getValue() + "'");
 		}
 
 		return _scanner.consume();
@@ -259,10 +257,7 @@ namespace Compiler {
 			prefix = prefixMap.at(tok.getType());
 		}
 		else {
-			//throw std::exception("Unrecognised token");
-			//throw std::runtime_error("Unrecognised token");
-			std::cout << "Unrecognised token" << std::endl;
-			exit(EXIT_FAILURE);
+			error("Unrecognised token '" + tok.getValue() + "'.");
 		}
 
 		// Get expression tree for the prefix
@@ -415,8 +410,7 @@ namespace Compiler {
 
 	void Parser::error(std::string message)
 	{
-		std::cerr << "Parser: " << message << std::endl;
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("Parser: " + message);
 	}
 
 }  // namespace Compiler

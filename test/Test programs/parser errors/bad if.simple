@@ -1,0 +1,9 @@
+#EXPECT:FAIL
+BEGIN
+
+    DEFINE main()
+        IF THEN
+            2+3
+       ENDIF
+    ENDDEF
+END

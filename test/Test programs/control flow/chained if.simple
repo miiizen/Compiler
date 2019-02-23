@@ -1,0 +1,18 @@
+#IF TEST:
+BEGIN
+    DEFINE main()
+        a = 5
+        IF a > 8 THEN
+            9+2
+        ELSE IF a > 4 THEN
+            9-2
+        ELSE IF a > 2 THEN
+            9*2
+        ELSE
+            9%8
+        # This is horrible
+        ENDIF
+        ENDIF
+        ENDIF
+    ENDDEF
+END

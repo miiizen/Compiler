@@ -1,0 +1,6 @@
+#EXPECT:FAIL
+BEGIN
+    DEFINE average()
+        (a + b) * 0.5
+    ENDDEF
+END

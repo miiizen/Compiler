@@ -1,0 +1,7 @@
+#EXPECT:FAIL
+BEGIN
+    DEFINE main()
+        # the ` character is unrecognised
+        i = 500 ` 300
+    ENDDEF
+END

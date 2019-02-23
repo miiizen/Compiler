@@ -1,0 +1,4 @@
+#EXPECT:FAIL
+BEGIN
+    DEFINE average(a, b)
+END
