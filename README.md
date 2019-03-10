@@ -28,3 +28,8 @@ Make sure you are in the build directory, then `cmake .. && make`
 ### Windows
 There is no support for linking LLVM on Windows because I have no idea how to make it work.
 ~~Just open the folder in visual studio if you are using it and it has support for cmake projects, or use cmake CLI/GUI to generate the solution files in the build directory and then open~~
+
+
+## Testing
+There are a set of sample programs which the compiler should be tested with.  These are run from a python script.  In order to run the tests, first build the compiler in the `build/` directory before changing to the `test/` directory and running the script.  Expected ouputs can be defined in the test programs with `#EXPECT:x` where x is the expected numerical output.  
+In addition, `#EXPECT:FAIL` can be used to specify a program for which compilation should fail.
