@@ -19,7 +19,7 @@ Installing the LLVM libraries depends on the distro/package manager.
 Install LLVM 7 (with libraries) with `sudo pacman -S llvm` or just libraries with `sudo pacman -S llvm-libs`.
 #### Debian/Ubuntu
 Follow the instructions at http://apt.llvm.org/.
-Use `sudo add-apt-repository "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-7 main"` then `sudo apt install llvm-7` for LLVM 7 on Strtch for example.
+Use `sudo add-apt-repository "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-7 main"` then `sudo apt install llvm-7` for LLVM 7 on Stretch for example.
 
 ## Building
 This project uses cmake, so it should be straightforward
@@ -33,3 +33,4 @@ There is no support for linking LLVM on Windows because I have no idea how to ma
 ## Testing
 There are a set of sample programs which the compiler should be tested with.  These are run from a python script.  In order to run the tests, first build the compiler in the `build/` directory before changing to the `test/` directory and running the script.  Expected ouputs can be defined in the test programs with `#EXPECT:x` where x is the expected numerical output.  
 In addition, `#EXPECT:FAIL` can be used to specify a program for which compilation should fail.
+`Compiler_Test/` contain old unit tests that are not used any more
