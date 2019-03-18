@@ -541,7 +541,7 @@ namespace Compiler {
 
         // Optimise function
         fpm->run(*thisFunc);
-        thisFunc->viewCFG();
+        //thisFunc->viewCFG();
 
         retFunc = thisFunc;
     }

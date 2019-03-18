@@ -314,8 +314,8 @@ namespace Compiler {
 
 
 
-	bool Scanner::isWhite(const char &op) const {
-		return op == ' ' || op == '\n' || op == '\t';
+	bool Scanner::isWhite(const char &ch) const {
+		return ch == ' ' || ch == '\n' || ch == '\t';
 	}
 
 	/* Consumers */

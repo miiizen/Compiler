@@ -192,9 +192,6 @@ namespace Compiler {
 		// Parse a statement block
 		std::unique_ptr<AST> block();
 
-		// Parse a function definition
-		std::unique_ptr<AST> defStmt();
-
 		// Parse an if statement
 		std::unique_ptr<AST> ifStmt();
 

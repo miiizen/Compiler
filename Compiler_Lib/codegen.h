@@ -71,8 +71,6 @@ namespace Compiler {
         // Helper function to create an alloca instruction in the entry block of a function
         AllocaInst *CreateEntryBlockAlloca(Function *func, const std::string &varName);
 
-        // Link our module to the standard library
-        //int linkSTL();
     public:
         // Initialize builder, module with context.  also init pointers to nullptr
         Codegen() : builder(context), module(std::make_unique<Module>("JIT", context)), fpm(std::make_unique<legacy::FunctionPassManager>(module.get())), retVal(nullptr), retFunc(nullptr) {

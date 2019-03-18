@@ -331,6 +331,9 @@ namespace Compiler {
 		// decl else for ahead
 		unique_ptr<AST> elseBlock;
 		unique_ptr<AST> thenBlock = block();
+		if (!thenBlock) {
+			error("Body of if statement is required");
+		}
 
 		// Check for else
 		if (_scanner.lookAhead(0).getType() == ELSE) {
@@ -383,6 +386,7 @@ namespace Compiler {
 		}
 
 		// Expect in
+		
 		expect(IN);
 
 		unique_ptr<AST> body = block();
