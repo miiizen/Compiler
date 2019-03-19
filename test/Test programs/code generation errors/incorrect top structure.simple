@@ -1,0 +1,7 @@
+#EXPECT:FAIL
+BEGIN
+    1 + 2
+    DEFINE func()
+        1+3
+    ENDDEF
+END

@@ -10,9 +10,6 @@ BEGIN
             9*2
         ELSE
             9%8
-        # This is horrible
-        ENDIF
-        ENDIF
         ENDIF
     ENDDEF
 END
