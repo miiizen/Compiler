@@ -1,0 +1,5 @@
+BEGIN
+    DEFINE main()
+        s = "Hello, World!"
+    ENDDEF
+END
