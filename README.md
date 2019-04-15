@@ -4,6 +4,7 @@ Hopefully this will be a small compiler for a turing complete language
 ### To-do list
  - [ ] Fix chained if/else statements
  - [ ] Add boolean AND/OR/NOT operators
+ - [ ] Add a `return` keyword to return values from the middle of function execution
  - [ ] Add option for debugging information in builds
  - [ ] code generation for ternary operator
  - [ ] Add strings
