@@ -38,6 +38,16 @@ namespace Compiler {
 		v->visit(this);
 	}
 
+	void FuncDefAST::accept(Visitor *v)
+	{
+		v->visit(this);
+	}
+
+	void ReturnAST::accept(Visitor *v)
+	{
+		v->visit(this);
+	}
+
 	void BinaryOpAST::accept(Visitor *v)
 	{		
 		v->visit(this);
@@ -60,11 +70,6 @@ namespace Compiler {
 
 	void ForAST::accept(Visitor *v)
 	{		
-		v->visit(this);
-	}
-
-	void FuncDefAST::accept(Visitor *v)
-	{
 		v->visit(this);
 	}
 

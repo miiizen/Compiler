@@ -175,6 +175,11 @@ namespace Compiler {
 
     }
 
+    void Codegen::visit(ReturnAST *node)
+    {
+
+    }
+
     void Codegen::visit(BinaryOpAST *node)
     {
         // Get lhs and rhs

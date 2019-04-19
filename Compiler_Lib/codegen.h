@@ -43,13 +43,14 @@ namespace Compiler {
         void visit(NameAST* node) override { lastName = node->toString(); };
         void visit(ArrayAST* node) override { node->getName()->accept(this); };
         void visit(AssignmentAST* node) override { node->getName()->accept(this); };
+        void visit(FuncDefAST* node) override { node->getName()->accept(this); };
         void visit(FuncCallAST* node) override { node->getName()->accept(this); };
+        void visit(ReturnAST* node) override { /* No name */ };
         void visit(BinaryOpAST* node) override { /* No name */ };
         void visit(UnaryOpAST* node) override { /* No name */ };
         void visit(TernaryOpAST* node) override { /* No name */ };
         void visit(IfAST* node) override { /* No name */ };
         void visit(ForAST* node) override { /* No name */ };
-        void visit(FuncDefAST* node) override { node->getName()->accept(this); };
     };
 
     class Codegen : public Visitor {
@@ -96,13 +97,14 @@ namespace Compiler {
         void visit(NameAST* node) override;
         void visit(ArrayAST* node) override;
         void visit(AssignmentAST* node) override;
+        void visit(FuncDefAST* node) override;
         void visit(FuncCallAST* node) override;
+        void visit(ReturnAST* node) override;
         void visit(BinaryOpAST* node) override;
         void visit(UnaryOpAST* node) override;
         void visit(TernaryOpAST* node) override;
         void visit(IfAST* node) override;
         void visit(ForAST* node) override;
-        void visit(FuncDefAST* node) override;
     };
 }  // namespace Compiler
 

@@ -29,12 +29,13 @@ namespace Compiler {
 		ARRAY,
 		ASSIGNMENT,
 		FUNCCALL,
+		FUNCDEF,
+		RETURN,
 		BINARYOP,
 		UNARYOP,
 		TERNARYOP,
 		IF,
 		FOR,
-		FUNCDEF
 	};
 
 	// Base AST node class
@@ -151,11 +152,26 @@ namespace Compiler {
 			: name(std::move(name)), args(std::move(args)) {}
 		const ASTType getType() override { return type; };
 
-        std::unique_ptr<AST> getName() { return std::move(name); };
-        std::vector<shared_ptr<AST>> getArgs() { return args; };
+		std::unique_ptr<AST> getName() { return std::move(name); };
+		std::vector<shared_ptr<AST>> getArgs() { return args; };
 
-        // Visitor hook
+		// Visitor hook
 		void accept(Visitor *v) override;
+	};
+
+	// Represents a return statement
+	class ReturnAST : public AST {
+		ASTType type = ASTType::RETURN;
+		// The expression to evaluate and return
+		std::unique_ptr<AST> retVal;
+		public:
+			ReturnAST(std::unique_ptr<AST> retVal)
+				: retVal(std::move(retVal)) {}
+
+			const ASTType getType() override { return type; };
+
+			// Visitor hook
+			void accept(Visitor *v) override;
 	};
 
 	// Represents binary operators.  Can have 2 children
@@ -268,13 +284,14 @@ namespace Compiler {
 		virtual void visit(NameAST* node) = 0;
 		virtual void visit(ArrayAST* node) = 0;
 		virtual void visit(AssignmentAST* node) = 0;
+		virtual void visit(FuncDefAST* node) = 0;
 		virtual void visit(FuncCallAST* node) = 0;
+		virtual void visit(ReturnAST* node) = 0;
 		virtual void visit(BinaryOpAST* node) = 0;
 		virtual void visit(UnaryOpAST* node) = 0;
 		virtual void visit(TernaryOpAST* node) = 0;
 		virtual void visit(IfAST* node) = 0;
 		virtual void visit(ForAST* node) = 0;
-		virtual void visit(FuncDefAST* node) = 0;
 	};
 }  // namespace Compiler
 
