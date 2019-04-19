@@ -92,6 +92,10 @@ namespace Compiler {
 				tokQueue.emplace_back( EXT, identStr );
 			}
 
+			else if (identStr == "RETURN") {
+				tokQueue.emplace_back( RETURN, identStr );
+			}
+
 			// just an identifier
 			else {
 				tokQueue.emplace_back( IDENTIFIER, identStr );
