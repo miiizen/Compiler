@@ -92,6 +92,14 @@ namespace Compiler {
 		return expr;
 	}
 
+	/* 		Return parser 		*/
+	unique_ptr<AST> ReturnParser::parse(Parser * parser, const Token & tok)
+	{
+		// RETURN ...
+		unique_ptr<AST> expr = parser->parseExpression(ASSIGNMENT);
+		return expr;
+	}
+
 	/*		Binary operator		*/
 	unique_ptr<AST> BinaryOperatorParser::parse(Parser * parser, unique_ptr<AST> left, const Token & tok)
 	{

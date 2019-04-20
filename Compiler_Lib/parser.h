@@ -75,6 +75,15 @@ namespace Compiler {
 		Precedence opPrec;
 	};
 
+	// Return keyword
+	class ReturnParser : public IPrefixParser {
+	public:
+		ReturnParser(Precedence prec)
+			:opPrec(prec) {}
+		std::unique_ptr<AST> parse(Parser* parser, const Token& tok) override;
+		Precedence opPrec;
+	};
+
 	// Interface for infix operator
 	class IInfixParser {
 	public:
