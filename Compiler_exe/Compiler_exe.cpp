@@ -61,11 +61,12 @@ int run(Config config) {
     // Set up grammar
     Parser myParser = Parser(config.code);
 
-    // Names, numbers, assign
+    // Names, numbers, assign, define, return
     myParser.registerPrefixTok(IDENTIFIER, std::make_unique<NameParser>());
     myParser.registerPrefixTok(NUMBER, std::make_unique<NumberParser>());
     myParser.registerInfixTok(ASSIGN, std::make_unique<AssignmentParser>(ASSIGNMENT));
     myParser.registerPrefixTok(DEFINE, std::make_unique<FunctionParser>());
+    myParser.registerPrefixTok(RETURN, std::make_unique<ReturnParser>(ASSIGNMENT));
 
     // Parens
     myParser.registerPrefixTok(LEFTPAREN, std::make_unique<GroupParser>(PREFIX));

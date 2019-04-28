@@ -177,6 +177,18 @@ namespace Compiler {
 
     void Codegen::visit(ReturnAST *node)
     {
+        // Get evaluation of operand/return value
+        node->getRetVal()->accept(this);
+        Value *returnVal = retVal;
+
+        if (!returnVal) {
+            //TODO(James) support return without value
+            logErrorV("There must be an expression to return.");
+            retVal = nullptr;
+            return;
+        }
+
+        builder.CreateRet(returnVal);
 
     }
 
@@ -556,6 +568,8 @@ namespace Compiler {
         // Optimise function
         fpm->run(*thisFunc);
         //thisFunc->viewCFG();
+        thisFunc->print(errs());
+
 
         retFunc = thisFunc;
     }

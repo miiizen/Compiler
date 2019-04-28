@@ -17,10 +17,10 @@ BEGIN
 
 	DEFINE mandelconverger(real, imag, iters, creal, cimag)
 		IF iters > 255 THEN
-			iters
+			RETURN iters
 		ENDIF
 		IF (real*real + imag*imag > 4) THEN
-			iters
+			RETURN iters
 		ELSE
 			mandelconverger(real*real - imag*imag + creal, 2*real*imag + cimag, iters+1, creal, cimag)
 		ENDIF

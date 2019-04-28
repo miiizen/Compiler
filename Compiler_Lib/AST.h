@@ -168,6 +168,7 @@ namespace Compiler {
 			ReturnAST(std::unique_ptr<AST> retVal)
 				: retVal(std::move(retVal)) {}
 
+			std::unique_ptr<AST> getRetVal() { return std::move(retVal); };
 			const ASTType getType() override { return type; };
 
 			// Visitor hook

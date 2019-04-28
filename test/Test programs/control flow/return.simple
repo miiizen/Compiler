@@ -1,0 +1,19 @@
+#EXPECT:1
+BEGIN
+    DEFINE EXT printd(x)
+    DEFINE func(x)
+        IF x < 5 THEN
+            RETURN 1
+        ELSE IF x = 5 THEN
+            RETURN 2
+        ELSE
+            RETURN 0
+        ENDIF
+        ENDIF
+    ENDDEF
+
+    DEFINE main()
+        v = func(4)
+        printd(v)
+    ENDDEF
+END
