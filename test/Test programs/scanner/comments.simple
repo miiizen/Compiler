@@ -1,0 +1,9 @@
+# This is a comment
+# This is also a comment
+# There should be no error
+
+BEGIN
+    DEFINE main()
+        3+2
+    ENDDEF
+END

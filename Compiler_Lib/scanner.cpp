@@ -20,7 +20,7 @@ namespace Compiler {
 		}
 
 		// skip comment
-		if (lookChar == '#') {
+		while (lookChar == '#') {
 			// Skip until EOL
 			do {
 				nextChar();
