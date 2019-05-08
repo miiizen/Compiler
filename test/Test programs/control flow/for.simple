@@ -1,9 +1,11 @@
-# FOR TEST
+#EXPECT:4
 BEGIN
+    DEFINE EXT printd(x)
     DEFINE main()
-        FOR i = 0, i < 4, 2 IN
-            i + 3
-            7+4
+    a = 0
+        FOR i = 0, i < 4, 1 IN
+            a = a +1
         ENDFOR
+        printd(a)
     ENDDEF
 END

@@ -245,6 +245,15 @@ namespace Compiler {
                 retVal = val;
                 break;
             /* ---- Logical ---- */
+
+            case AND:
+                // Evaluate LHS and RHS as i1.
+                // create a branch if equal for the i1 results
+                // nah just do it in the language itself
+
+                break;
+
+            
             //TODO(James) implement all binary operators
             default:
                 logErrorV("Invalid binary operator");
@@ -553,14 +562,6 @@ namespace Compiler {
         IRBuilder<> tempBuilder(&func->getEntryBlock(), func->getEntryBlock().begin());
         return tempBuilder.CreateAlloca(Type::getDoubleTy(context), 0, varName);
     }
-
-    /*int Codegen::linkSTL() {
-        SMDiagnostic error;
-        unique_ptr<Module> m(parseIRFile("../../Compiler_Lib/stl.ll", error, context));
-        if (m) {
-            Linker::linkModules(*module, std::move(m));
-        }
-    }*/
 
     int Codegen::emitObjCode(std::string filename)
     {
