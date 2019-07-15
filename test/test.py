@@ -1,7 +1,7 @@
 import subprocess
 import os
 import shutil
-
+import sys
 
 # Colours for our output
 class OutColours:
@@ -82,6 +82,7 @@ def main():
     except:
         print(OutColours.FAIL + "No compiler binary found in '../build/Compiler_exe/compiler_exe'.\nPlease build before testing" + OutColours.ENDC)
         exit()
+
 
     testDir = "Test programs"
     for dirName, subDirs, files in os.walk(testDir):

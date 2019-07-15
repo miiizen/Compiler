@@ -4,7 +4,7 @@ BEGIN
     DEFINE func(x)
         IF x < 5 THEN
             RETURN 1
-        ELSE IF x = 5 THEN
+        ELSE IF x == 5 THEN
             RETURN 2
         ELSE
             RETURN 0
@@ -13,7 +13,11 @@ BEGIN
     ENDDEF
 
     DEFINE main()
-        v = func(4)
+        v = func(1)
+        printd(v)
+        v = func(5)
+        printd(v)
+        v = func(6)
         printd(v)
     ENDDEF
 END

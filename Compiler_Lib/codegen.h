@@ -22,6 +22,7 @@
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
 #include "llvm/Transforms/Utils.h"
+#include "llvm/Transforms/Utils/UnifyFunctionExitNodes.h"
 #include <map>
 
 
@@ -83,6 +84,8 @@ namespace Compiler {
             fpm->add(createReassociatePass());
             // eliminate common sub-expressions
             fpm->add(createGVNPass());
+            // Consolidate exits from a function
+            //fpm->add(createUnifyFunctionExitNodesPass());
             // simplify control flow graph
             fpm->add(createCFGSimplificationPass());
             // init pass manager

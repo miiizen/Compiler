@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 3.7.0)
 project (compiler_exe)
 
+SET(CMAKE_BUILD_TYPE Debug)
+
 # Debugging on windows
 if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.15" )
     add_compile_options( /JMC )

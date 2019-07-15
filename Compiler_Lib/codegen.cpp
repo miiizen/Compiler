@@ -48,7 +48,7 @@ namespace Compiler {
         // If null, we are at the top level of the program.
         // We want to generate function definitions in this case
         // The structure of the program (just function definitions at the top level) should be verified at some point,
-        // //probably earlier on.
+        // probably earlier on.
         if (!currentBlock) {
             for (const auto &child : node->getChildren()) {
                 if(child->getType() != ASTType::FUNCDEF) {
@@ -59,7 +59,7 @@ namespace Compiler {
             return;
         }
 
-        // If there is a parent, we gt to this point and assume we are in a function
+        // If there is a parent, we get to this point and assume we are in a function
         Function *parentFunc = currentBlock->getParent();
 
         // Generate code recursively

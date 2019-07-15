@@ -97,7 +97,8 @@ namespace Compiler {
 	{
 		// RETURN ...
 		unique_ptr<AST> expr = parser->parseExpression(ASSIGNMENT);
-		return expr;
+		unique_ptr<AST> ret = std::make_unique<ReturnAST>(std::move(expr));
+		return ret;
 	}
 
 	/*		Binary operator		*/
@@ -329,6 +330,7 @@ namespace Compiler {
 		expect(IF);
 
 		// get conditional expression
+		// TODO(James) Actually check if this is a conditional? problems caused otherwise.
 		unique_ptr<AST> cond = parseExpression();
 		if (!cond) {
 			error("A conditional expression is required.");
